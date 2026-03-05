@@ -1,13 +1,74 @@
-<!doctype html>
-<html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <link rel="icon" type="image/svg+xml" href="/vite.svg" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>rakendusteloomine</title>
-  </head>
-  <body>
-    <div id="root"></div>
-    <script type="module" src="/src/main.jsx"></script>
-  </body>
+<!DOCTYPE html>
+<html lang="et">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MovieRate Prototüüp</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+    <nav class="navbar">
+        <div class="logo">🎬 MovieRate</div>
+        <div class="nav-links">
+            <a href="#" class="nav-item active">Home</a>
+            <a href="#">Trending</a>
+            <a href="#">Profile</a>
+        </div>
+    </nav>
+
+    <main class="container">
+        <h1>Avasta filme</h1>
+        <p>Otsi oma järgmine lemmik film</p>
+
+        <div class="search-container">
+            <span class="search-icon">🔍</span>
+            <input type="text" placeholder="Search movies...">
+        </div>
+
+        <div class="filters">
+            <button class="filter-btn active">All</button>
+            <button class="filter-btn">Action</button>
+            <button class="filter-btn">Sci-Fi</button>
+            <button class="filter-btn">Thriller</button>
+            <button class="filter-btn">Horror</button>
+            <button class="filter-btn">Fantasy</button>
+            <button class="filter-btn">Adventure</button>
+            <button class="filter-btn">Mystery</button>
+            <button class="filter-btn">Animation</button>
+            <button class="filter-btn">Western</button>
+            <button class="filter-btn">Documentary</button>
+        </div>
+
+        <p class="results-count">12 filmi leitud</p>
+
+        <section class="movie-grid">
+            <div class="movie-card">
+                <div class="poster-container">
+                    <img src="https://images.unsplash.com/photo-1536440136628-849c177e76a1?q=80&w=400&h=600&fit=crop" alt="Filmi poster">
+                    <div class="overlay">
+                        <div class="action-buttons">
+                            <button class="btn-like">👍</button>
+                            <button class="btn-dislike">👎</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="movie-card">
+                <div class="poster-container">
+                    <img src="https://images.unsplash.com/photo-1626814026160-2237a95fc5a0?q=80&w=400&h=600&fit=crop" alt="Filmi poster">
+                    <div class="overlay">
+                        <div class="action-buttons">
+                            <button class="btn-like">👍</button>
+                            <button class="btn-dislike">👎</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+</body>
 </html>
