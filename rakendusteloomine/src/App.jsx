@@ -1,5 +1,9 @@
 import { useState } from 'react' 
-import './App.css' 
+import './App.css'
+
+const Home = () => <h2>Home page</h2>;
+const Trending = () => <h2>Trending page</h2>;
+const Profile = () => <h2>Profile page</h2>;
 
 function App() {
   const [activeGenre, setActiveGenre] = useState('All'); 
@@ -8,14 +12,22 @@ function App() {
 
   return (
     <div className="App"> 
+    <BrowerRouter>
       <nav className="navbar">
         <div className="logo">🎬 MovieRate</div>
         <div className="nav-links">
-          <a href="#" className="nav-item active">Home</a>
-          <a href="#">Trending</a>
-          <a href="#">Profile</a>
+          <Link to="/" className="nav-item active">Home</Link>
+          <Link to="/trending" className="nav-item">Trending</Link>
+          <Link to="/profile" className="nav-item">Profile</Link>
         </div>
       </nav>
+      
+      <Routes>
+        <Route path="/" element={<Home />} />
+        <Route path="/trending" element={<Trending />} />
+        <Route path="/profile" element={<Profile />} />
+      </Routes>
+    </BrowerRouter>
 
       <main className="container">
         <h1>Avasta filme</h1>
