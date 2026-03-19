@@ -1,0 +1,129 @@
+.header {
+  background-color: var(--bg-secondary);
+  border-bottom: 1px solid var(--bg-tertiary);
+  padding: 16px 0;
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+}
+
+.container {
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 0 20px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.logo {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 24px;
+  font-weight: 700;
+  cursor: pointer;
+  color: var(--accent-blue);
+  transition: var(--transition);
+}
+
+.logo:hover {
+  color: var(--accent-orange);
+  transform: scale(1.05);
+}
+
+.logoIcon {
+  font-size: 28px;
+}
+
+.nav {
+  display: flex;
+  gap: 32px;
+}
+
+.navLink {
+  background: none;
+  border: none;
+  color: var(--text-primary);
+  font-size: 16px;
+  font-weight: 600;
+  cursor: pointer;
+  padding: 8px 0;
+  position: relative;
+  transition: var(--transition);
+}
+
+.navLink::after {
+  content: "";
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 0;
+  height: 2px;
+  background-color: var(--accent-blue);
+  transition: width 0.3s ease;
+}
+
+.navLink:hover::after {
+  width: 100%;
+}
+
+.navLink.active {
+  color: var(--accent-blue);
+  font-weight: 700;
+}
+
+.navLink.active::after {
+  width: 100%;
+}
+
+.hamburger {
+  display: none;
+  background: none;
+  border: none;
+  color: var(--accent-blue);
+  font-size: 24px;
+  cursor: pointer;
+  padding: 8px;
+  transition: var(--transition);
+}
+
+.hamburger:hover {
+  color: var(--accent-orange);
+}
+
+@media (max-width: 768px) {
+  .container {
+    padding: 0 16px;
+  }
+
+  .nav {
+    position: absolute;
+    top: 60px;
+    left: 0;
+    right: 0;
+    flex-direction: column;
+    gap: 16px;
+    background-color: var(--bg-secondary);
+    padding: 20px;
+    border-bottom: 1px solid var(--bg-tertiary);
+    display: none;
+  }
+
+  .nav.navOpen {
+    display: flex;
+  }
+
+  .hamburger {
+    display: block;
+  }
+
+  .logo {
+    font-size: 20px;
+  }
+
+  .logoIcon {
+    font-size: 24px;
+  }
+}

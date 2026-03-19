@@ -1,62 +1,72 @@
-import { useState } from 'react' 
-import './App.css'
+import { useState, useContext } from "react";
+import { MovieProvider } from "./contexts/MovieProvider";
+import { MovieDataProvider } from "./contexts/MovieDataProvider";
+import { MovieDataContext } from "./contexts/movieDataContext";
+import Header from "./components/Header";
+import Home from "./components/Home";
+import MovieDetail from "./components/MovieDetail";
+import Profile from "./components/Profile";
+import "./styles/global.css";
 
-const Home = () => <h2>Home page</h2>;
-const Trending = () => <h2>Trending page</h2>;
-const Profile = () => <h2>Profile page</h2>;
+function AppContent() {
+  const [currentView, setCurrentView] = useState("home");
+  const [selectedMovieId, setSelectedMovieId] = useState(null);
+  const { getMovieById } = useContext(MovieDataContext);
 
-function App() {
-  const [activeGenre, setActiveGenre] = useState('All'); 
+  const selectedMovie = getMovieById(selectedMovieId);
 
-  const genres = ["All", "Action", "Sci-Fi", "Thriller", "Horror", "Fantasy", "Adventure", "Mystery", "Animation", "Western", "Documentary"];
+  const handleViewChange = (view) => {
+    setCurrentView(view);
+    setSelectedMovieId(null);
+  };
+
+  const handleMovieSelect = (movieId) => {
+    setSelectedMovieId(movieId);
+    setCurrentView("detail");
+  };
+
+  const handleBackFromDetail = () => {
+    setCurrentView("home");
+    setSelectedMovieId(null);
+  };
 
   return (
-    <div className="App"> 
-    <BrowerRouter>
-      <nav className="navbar">
-        <div className="logo">🎬 MovieRate</div>
-        <div className="nav-links">
-          <Link to="/" className="nav-item active">Home</Link>
-          <Link to="/trending" className="nav-item">Trending</Link>
-          <Link to="/profile" className="nav-item">Profile</Link>
-        </div>
-      </nav>
-      
-      <Routes>
-        <Route path="/" element={<Home />} />
-        <Route path="/trending" element={<Trending />} />
-        <Route path="/profile" element={<Profile />} />
-      </Routes>
-    </BrowerRouter>
-
-      <main className="container">
-        <h1>Avasta filme</h1>
-        <p>Otsi oma järgmine lemmik film</p>
-
-        <div className="search-container">
-          <span className="search-icon">🔍</span>
-          <input type="text" placeholder="Search movies..." />
-        </div>
-
-        {}
-        <div className="filters">
-          {genres.map((genre) => (
-            <button 
-              key={genre} 
-              className={`filter-btn ${activeGenre === genre ? 'active' : ''}`}
-              onClick={() => setActiveGenre(genre)} // Sündmuste töötlus
-            >
-              {genre}
-            </button>
-          ))}
-        </div>
-
-        <section className="movie-grid">
-           {}
-        </section>
+    <>
+      <Header currentView={currentView} onViewChange={handleViewChange} />
+      <main>
+        {currentView === "home" && <Home onMovieSelect={handleMovieSelect} />}
+        {currentView === "detail" && (
+          <MovieDetail movie={selectedMovie} onBack={handleBackFromDetail} />
+        )}
+        {currentView === "profile" && (
+          <Profile onMovieSelect={handleMovieSelect} />
+        )}
       </main>
-    </div>
-  )
+    </>
+  );
 }
 
-export default App
+function App() {
+  return (
+    <MovieProvider>
+      <MovieDataProvider>
+        <AppContent />
+      </MovieDataProvider>
+    </MovieProvider>
+  );
+}
+
+export default App;
+}
+
+function App() {
+  return (
+    <MovieProvider>
+      <MovieDataProvider>
+        <AppContent />
+      </MovieDataProvider>
+    </MovieProvider>
+  );
+}
+
+export default App;

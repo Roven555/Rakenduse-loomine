@@ -1,0 +1,169 @@
+[
+  {
+    "id": 1,
+    "title": "The Matrix Resurrections",
+    "year": 2021,
+    "category": "Sci-Fi",
+    "rating": 8.5,
+    "poster": "https://images.unsplash.com/photo-1569159867126-d3f1a6d1c2bc?w=400&h=600&fit=crop",
+    "backdrop": "https://images.unsplash.com/photo-1569159867126-d3f1a6d1c2bc?w=1200&h=400&fit=crop",
+    "synopsis": "Return to a world of two realities: one, everyday life; and two, what lies behind it. Thomas Anderson has awakened to his reality, but the pressures of supporting those who believe in him, the lingering nightmares of his dreams, and the impossibility of the white rabbit has only made him who he truly is.",
+    "cast": [
+      "Keanu Reeves",
+      "Carrie-Anne Moss",
+      "Yahya Abdul-Mateen II",
+      "Jessica Henwick"
+    ]
+  },
+  {
+    "id": 2,
+    "title": "Oppenheimer",
+    "year": 2023,
+    "category": "Drama",
+    "rating": 9.0,
+    "poster": "https://images.unsplash.com/photo-1518676590629-3dcbd9c5a5c9?w=400&h=600&fit=crop",
+    "backdrop": "https://images.unsplash.com/photo-1518676590629-3dcbd9c5a5c9?w=1200&h=400&fit=crop",
+    "synopsis": "The story of American scientist J. Robert Oppenheimer and his role in the development of the atomic bomb during World War II.",
+    "cast": ["Cillian Murphy", "Emily Blunt", "Rob Downey Jr.", "Florence Pugh"]
+  },
+  {
+    "id": 3,
+    "title": "Dune: Part Two",
+    "year": 2024,
+    "category": "Sci-Fi",
+    "rating": 8.8,
+    "poster": "https://images.unsplash.com/photo-1574375927938-d5a98e8ffe85?w=400&h=600&fit=crop",
+    "backdrop": "https://images.unsplash.com/photo-1574375927938-d5a98e8ffe85?w=1200&h=400&fit=crop",
+    "synopsis": "Paul Atreides, now living in hiding, seeks revenge against the conspirators who destroyed his family. Uniting with Chani and the Fremen, he wages war against the Emperor in an attempt to prevent a terrible future.",
+    "cast": [
+      "Timothée Chalamet",
+      "Zendaya",
+      "Rebecca Ferguson",
+      "Austin Butler"
+    ]
+  },
+  {
+    "id": 4,
+    "title": "Barbie",
+    "year": 2023,
+    "category": "Comedy",
+    "rating": 8.0,
+    "poster": "https://images.unsplash.com/photo-1594908900066-3f47337549d8?w=400&h=600&fit=crop",
+    "backdrop": "https://images.unsplash.com/photo-1594908900066-3f47337549d8?w=1200&h=400&fit=crop",
+    "synopsis": "Barbie's perfect life in the colorful and seemingly perfect world of Barbie Land is turned upside down when they get a chance to go to the real world.",
+    "cast": ["Margot Robbie", "Ryan Gosling", "Will Ferrell", "America Ferrera"]
+  },
+  {
+    "id": 5,
+    "title": "Killers of the Flower Moon",
+    "year": 2023,
+    "category": "Thriller",
+    "rating": 8.6,
+    "poster": "https://images.unsplash.com/photo-1489599849228-ed969d7d66bb?w=400&h=600&fit=crop",
+    "backdrop": "https://images.unsplash.com/photo-1489599849228-ed969d7d66bb?w=1200&h=400&fit=crop",
+    "synopsis": "When oil is discovered in Oklahoma, a member of the Osage Nation is accused of a crime that could be part of a larger conspiracy.",
+    "cast": [
+      "Leonardo DiCaprio",
+      "Robert De Niro",
+      "Lily Gladstone",
+      "Jesse Plemons"
+    ]
+  },
+  {
+    "id": 6,
+    "title": "Top Gun: Maverick",
+    "year": 2022,
+    "category": "Action",
+    "rating": 8.3,
+    "poster": "https://images.unsplash.com/photo-1533613220915-609f961a6b78?w=400&h=600&fit=crop",
+    "backdrop": "https://images.unsplash.com/photo-1533613220915-609f961a6b78?w=1200&h=400&fit=crop",
+    "synopsis": "After more than thirty years of service as one of the Navy's top aviators, Pete Mitchell is where he belongs, pushing the envelope as a fearless test pilot.",
+    "cast": ["Tom Cruise", "Miles Teller", "Jennifer Connelly", "Jon Hamm"]
+  },
+  {
+    "id": 7,
+    "title": "The Brutalist",
+    "year": 2023,
+    "category": "Drama",
+    "rating": 8.7,
+    "poster": "https://images.unsplash.com/photo-1576431753383-7b58c92eea3f?w=400&h=600&fit=crop",
+    "backdrop": "https://images.unsplash.com/photo-1576431753383-7b58c92eea3f?w=1200&h=400&fit=crop",
+    "synopsis": "A Hungarian-Jewish architecture student arrives in America in the '20s to fulfill his dreams and falls in love, but his vision and identity begin to change.",
+    "cast": ["Adrien Brody", "Guy Pearce", "Jessica Chastain", "Raffey Cassidy"]
+  },
+  {
+    "id": 8,
+    "title": "Asteroid City",
+    "year": 2023,
+    "category": "Comedy",
+    "rating": 7.9,
+    "poster": "https://images.unsplash.com/photo-1543528821-4bf539c4a8f1?w=400&h=600&fit=crop",
+    "backdrop": "https://images.unsplash.com/photo-1543528821-4bf539c4a8f1?w=1200&h=400&fit=crop",
+    "synopsis": "A fictional desert town in 1955 hosts a Junior Stargazer convention, where friendships are forged, mysteries unravel, and cosmic adventures begin.",
+    "cast": [
+      "Jason Schwartzman",
+      "Scarlett Johansson",
+      "Tom Hanks",
+      "Margot Robbie"
+    ]
+  },
+  {
+    "id": 9,
+    "title": "Inception",
+    "year": 2010,
+    "category": "Sci-Fi",
+    "rating": 8.8,
+    "poster": "https://images.unsplash.com/photo-1505686994434-e3cc5abf1330?w=400&h=600&fit=crop",
+    "backdrop": "https://images.unsplash.com/photo-1505686994434-e3cc5abf1330?w=1200&h=400&fit=crop",
+    "synopsis": "A skilled thief who steals corporate secrets through the use of dream-sharing technology is given the inverse task of planting an idea.",
+    "cast": ["Leonardo DiCaprio", "Marion Cotillard", "Ellen Page", "Tom Hardy"]
+  },
+  {
+    "id": 10,
+    "title": "John Wick",
+    "year": 2014,
+    "category": "Action",
+    "rating": 8.1,
+    "poster": "https://images.unsplash.com/photo-1509347528160-9a9e33742cdb?w=400&h=600&fit=crop",
+    "backdrop": "https://images.unsplash.com/photo-1509347528160-9a9e33742cdb?w=1200&h=400&fit=crop",
+    "synopsis": "An ex-hitman comes out of retirement to track down the gangsters who killed his beloved dog and took everything from him.",
+    "cast": [
+      "Keanu Reeves",
+      "Michael Nyqvist",
+      "Alfie Allen",
+      "Adrianne Palicki"
+    ]
+  },
+  {
+    "id": 11,
+    "title": "The Dark Knight",
+    "year": 2008,
+    "category": "Action",
+    "rating": 9.0,
+    "poster": "https://images.unsplash.com/photo-1489599849228-ed969d7d66bb?w=400&h=600&fit=crop",
+    "backdrop": "https://images.unsplash.com/photo-1489599849228-ed969d7d66bb?w=1200&h=400&fit=crop",
+    "synopsis": "Batman must accept one of the greatest psychological and physical tests to fight injustice and bring the truth to Gotham.",
+    "cast": [
+      "Christian Bale",
+      "Heath Ledger",
+      "Aaron Eckhart",
+      "Maggie Gyllenhaal"
+    ]
+  },
+  {
+    "id": 12,
+    "title": "Pulp Fiction",
+    "year": 1994,
+    "category": "Thriller",
+    "rating": 8.9,
+    "poster": "https://images.unsplash.com/photo-1598899134739-24c46f58b8c0?w=400&h=600&fit=crop",
+    "backdrop": "https://images.unsplash.com/photo-1598899134739-24c46f58b8c0?w=1200&h=400&fit=crop",
+    "synopsis": "The lives of two mob hitmen, a boxer, a gangster and his wife intertwine in four tales of violence and redemption.",
+    "cast": [
+      "John Travolta",
+      "Samuel L. Jackson",
+      "Uma Thurman",
+      "Harvey Keitel"
+    ]
+  }
+]

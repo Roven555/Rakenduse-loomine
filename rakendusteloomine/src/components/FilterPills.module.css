@@ -1,0 +1,67 @@
+.filterContainer {
+  padding: 16px 0;
+  border-bottom: 1px solid var(--bg-tertiary);
+  background-color: var(--bg-primary);
+}
+
+.pillsWrapper {
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 0 20px;
+  display: flex;
+  gap: 12px;
+  overflow-x: auto;
+  scroll-behavior: smooth;
+  -webkit-overflow-scrolling: touch;
+}
+
+.pill {
+  padding: 8px 16px;
+  background-color: var(--bg-secondary);
+  border: 1px solid var(--bg-tertiary);
+  border-radius: 20px;
+  color: var(--text-primary);
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: var(--transition);
+  flex-shrink: 0;
+}
+
+.pill:hover {
+  border-color: var(--accent-blue);
+  transform: translateY(-2px);
+}
+
+.pill.active {
+  background-color: var(--accent-blue);
+  color: var(--bg-primary);
+  border-color: var(--accent-blue);
+  box-shadow: 0 4px 12px rgba(0, 212, 255, 0.3);
+}
+
+.pillsWrapper::-webkit-scrollbar {
+  height: 4px;
+}
+
+.pillsWrapper::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.pillsWrapper::-webkit-scrollbar-thumb {
+  background: var(--accent-blue);
+  border-radius: 2px;
+}
+
+@media (max-width: 768px) {
+  .pillsWrapper {
+    padding: 0 16px;
+    gap: 8px;
+  }
+
+  .pill {
+    padding: 6px 12px;
+    font-size: 13px;
+  }
+}
