@@ -57,16 +57,3 @@ function App() {
 }
 
 export default App;
-}
-
-function App() {
-  return (
-    <MovieProvider>
-      <MovieDataProvider>
-        <AppContent />
-      </MovieDataProvider>
-    </MovieProvider>
-  );
-}
-
-export default App;

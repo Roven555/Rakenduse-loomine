@@ -77,7 +77,8 @@ const movieReducer = (state, action) => {
         ...state,
         movies: newMovies,
         filteredMovies: filtered,
-        currentPage: action.payload.length > 0 ? state.currentPage + 1 : state.currentPage,
+        currentPage:
+          action.payload.length > 0 ? state.currentPage + 1 : state.currentPage,
         isLoadingMore: false,
         hasMoreMovies: action.payload.length > 0,
       };
@@ -121,11 +122,11 @@ const Home = ({ onMovieSelect }) => {
     const fetchMovies = async () => {
       try {
         dispatch({ type: "SET_LOADING", payload: true });
-        // Fetch 3 pages (60 movies) on initial load for better selection
-        const page1 = await fetchPopularMovies(1);
-        const page2 = await fetchPopularMovies(2);
-        const page3 = await fetchPopularMovies(3);
-        const allMovies = [...page1, ...page2, ...page3];
+        // Fetch 10 pages (200 movies) on initial load for better selection
+        const pages = await Promise.all(
+          Array.from({ length: 10 }, (_, i) => fetchPopularMovies(i + 1)),
+        );
+        const allMovies = pages.flat();
         cacheMovies(allMovies);
         dispatch({ type: "SET_MOVIES", payload: allMovies });
       } catch (err) {
@@ -242,7 +243,9 @@ const Home = ({ onMovieSelect }) => {
             onClick={handleLoadMore}
             disabled={state.isLoadingMore}
           >
-            {state.isLoadingMore ? "Loading more movies..." : "Load More Movies"}
+            {state.isLoadingMore
+              ? "Loading more movies..."
+              : "Load More Movies"}
           </button>
         </div>
       )}
