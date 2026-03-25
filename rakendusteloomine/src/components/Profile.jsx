@@ -23,9 +23,9 @@ const Profile = ({ onMovieSelect }) => {
           <div className={styles.headerContent}>
             <span className={styles.avatar}>👤</span>
             <div>
-              <h1 className={styles.title}>My Profile</h1>
+              <h1 className={styles.title}>Minu Profiil</h1>
               <p className={styles.subtitle}>
-                {totalMovies} movie{totalMovies !== 1 ? "s" : ""} rated
+                {totalMovies} film{totalMovies !== 1 ? "i" : ""} hinnatud
               </p>
             </div>
           </div>
@@ -41,14 +41,14 @@ const Profile = ({ onMovieSelect }) => {
               onClick={() => setActiveTab("likes")}
             >
               <span className={styles.tabIcon}>♥</span>
-              My Favorites ({likedMovies.length})
+              Lemmikud ({likedMovies.length})
             </button>
             <button
               className={`${styles.tab} ${activeTab === "dislikes" ? styles.active : ""}`}
               onClick={() => setActiveTab("dislikes")}
             >
               <span className={styles.tabIcon}>✕</span>
-              Not Interested ({dislikedMovies.length})
+              Ei huvita ({dislikedMovies.length})
             </button>
           </div>
         </div>
@@ -61,8 +61,11 @@ const Profile = ({ onMovieSelect }) => {
             {likedMovieObjects.length === 0 ? (
               <div className={styles.emptyMessage}>
                 <span className={styles.emptyIcon}>♥</span>
-                <h2>No Favorites Yet</h2>
-                <p>Start liking movies to build your favorites list!</p>
+                <h2>Lemmikuid pole veel</h2>
+                <p>
+                  Hakka filme meeldivaks märkima, et koostada oma lemmikute
+                  nimekiri!
+                </p>
               </div>
             ) : (
               <MovieList
@@ -78,8 +81,8 @@ const Profile = ({ onMovieSelect }) => {
             {dislikedMovieObjects.length === 0 ? (
               <div className={styles.emptyMessage}>
                 <span className={styles.emptyIcon}>✕</span>
-                <h2>No Disliked Movies</h2>
-                <p>Mark movies as "Not Interested" to see them here!</p>
+                <h2>Mittemeeldivaid filme pole</h2>
+                <p>Märgi filmid "Ei huvita" nupuga, et neid siin näha!</p>
               </div>
             ) : (
               <MovieList

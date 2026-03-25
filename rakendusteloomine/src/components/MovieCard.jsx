@@ -36,16 +36,16 @@ const MovieCard = ({ movie, onCardClick }) => {
             <button
               className={`${styles.actionBtn} ${isLiked(movie.id) ? styles.liked : ""}`}
               onClick={handleLikeClick}
-              title="Like this movie"
+              title="Meeldib"
             >
-              ♥ Like
+              ♥ Meeldib
             </button>
             <button
               className={`${styles.actionBtn} ${isDisliked(movie.id) ? styles.disliked : ""}`}
               onClick={handleDislikeClick}
-              title="Dislike this movie"
+              title="Ei meeldi"
             >
-              ✕ Dislike
+              ✕ Ei meeldi
             </button>
           </div>
         </div>
@@ -56,7 +56,9 @@ const MovieCard = ({ movie, onCardClick }) => {
         </h3>
         <div className={styles.meta}>
           <span className={styles.year}>{movie.year}</span>
-          <span className={styles.category}>{movie.category}</span>
+          <span className={styles.category}>
+            {movie.categories ? movie.categories.join(", ") : movie.category}
+          </span>
         </div>
         <div className={styles.rating}>
           <span className={styles.ratingValue}>★ {movie.rating}</span>

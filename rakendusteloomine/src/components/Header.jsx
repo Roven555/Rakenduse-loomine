@@ -8,8 +8,7 @@ const Header = ({ currentView, onViewChange }) => {
     <header className={styles.header}>
       <div className={styles.container}>
         <div className={styles.logo} onClick={() => onViewChange("home")}>
-          <span className={styles.logoIcon}>🎬</span>
-          CineRate
+          <img src="/logo.png" alt="FilmiRiiul" className={styles.logoImg} />
         </div>
 
         <nav
@@ -22,7 +21,7 @@ const Header = ({ currentView, onViewChange }) => {
               setMobileMenuOpen(false);
             }}
           >
-            Home
+            Avaleht
           </button>
           <button
             className={`${styles.navLink} ${currentView === "profile" ? styles.active : ""}`}
@@ -31,7 +30,7 @@ const Header = ({ currentView, onViewChange }) => {
               setMobileMenuOpen(false);
             }}
           >
-            Profile
+            Profiil
           </button>
         </nav>
 

@@ -24,9 +24,9 @@ const MovieDetail = ({ movie, onBack }) => {
   if (!movie) {
     return (
       <div className={styles.notFound}>
-        <p>Movie not found</p>
+        <p>Filmi ei leitud</p>
         <button className={styles.backBtn} onClick={onBack}>
-          ← Back
+          ← Tagasi
         </button>
       </div>
     );
@@ -43,7 +43,7 @@ const MovieDetail = ({ movie, onBack }) => {
         />
         <div className={styles.backdropOverlay}></div>
         <button className={styles.backBtn} onClick={onBack}>
-          ← Back
+          ← Tagasi
         </button>
       </div>
 
@@ -66,20 +66,24 @@ const MovieDetail = ({ movie, onBack }) => {
             <div className={styles.meta}>
               <span className={styles.year}>{movie.year}</span>
               <span className={styles.divider}>•</span>
-              <span className={styles.category}>{movie.category}</span>
+              <span className={styles.category}>
+                {movie.categories
+                  ? movie.categories.join(", ")
+                  : movie.category}
+              </span>
               <span className={styles.divider}>•</span>
               <span className={styles.rating}>★ {movie.rating}/10</span>
             </div>
 
             {/* Synopsis */}
             <div className={styles.section}>
-              <h2 className={styles.sectionTitle}>Synopsis</h2>
+              <h2 className={styles.sectionTitle}>Süžee</h2>
               <p className={styles.synopsis}>{movie.synopsis}</p>
             </div>
 
             {/* Cast */}
             <div className={styles.section}>
-              <h2 className={styles.sectionTitle}>Cast</h2>
+              <h2 className={styles.sectionTitle}>Näitlejad</h2>
               <div className={styles.castList}>
                 {cast.length > 0 ? (
                   cast.map((actor, index) => (
@@ -89,7 +93,7 @@ const MovieDetail = ({ movie, onBack }) => {
                     </div>
                   ))
                 ) : (
-                  <p className={styles.noCast}>Cast information loading...</p>
+                  <p className={styles.noCast}>Näitlejate info laadimine...</p>
                 )}
               </div>
             </div>
@@ -101,14 +105,14 @@ const MovieDetail = ({ movie, onBack }) => {
                 onClick={() => toggleLike(movie.id)}
               >
                 <span className={styles.icon}>♥</span>
-                {isLiked(movie.id) ? "Liked" : "Like"}
+                {isLiked(movie.id) ? "Meeldib" : "Meeldib"}
               </button>
               <button
                 className={`${styles.actionBtn} ${isDisliked(movie.id) ? styles.disliked : ""}`}
                 onClick={() => toggleDislike(movie.id)}
               >
                 <span className={styles.icon}>✕</span>
-                {isDisliked(movie.id) ? "Disliked" : "Dislike"}
+                {isDisliked(movie.id) ? "Ei meeldi" : "Ei meeldi"}
               </button>
             </div>
           </div>

@@ -29,7 +29,7 @@ const SearchBar = ({ searchQuery, onSearchChange }) => {
         <input
           ref={searchInputRef}
           type="text"
-          placeholder="Search movies by title..."
+          placeholder="Otsi filme pealkirja järgi..."
           value={searchQuery}
           onChange={handleChange}
           className={styles.searchInput}

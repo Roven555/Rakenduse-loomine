@@ -11,7 +11,7 @@ const initialState = {
   movies: [],
   filteredMovies: [],
   searchQuery: "",
-  activeCategory: "All",
+  activeCategory: "Kõik",
   isLoading: true,
   error: null,
   currentPage: 1,
@@ -22,14 +22,20 @@ const initialState = {
 // Reducer function to handle complex state logic
 const movieReducer = (state, action) => {
   switch (action.type) {
-    case "SET_MOVIES":
+    case "SET_MOVIES": {
+      const filtered = filterMovies(
+        action.payload,
+        state.searchQuery,
+        state.activeCategory,
+      );
       return {
         ...state,
         movies: action.payload,
-        filteredMovies: action.payload,
+        filteredMovies: filtered,
         isLoading: false,
         error: null,
       };
+    }
 
     case "SET_SEARCH_QUERY": {
       const query = action.payload.toLowerCase();
@@ -101,15 +107,25 @@ const movieReducer = (state, action) => {
 const filterMovies = (movies, searchQuery, category) => {
   return movies.filter((movie) => {
     const matchesSearch = movie.title.toLowerCase().includes(searchQuery);
-    const matchesCategory = category === "All" || movie.category === category;
+    const matchesCategory =
+      category === "Kõik" ||
+      (movie.categories && movie.categories.includes(category)) ||
+      movie.category === category;
     return matchesSearch && matchesCategory;
   });
 };
 
 // Get unique categories from movies
 const getCategories = (movies) => {
-  const categories = ["All"];
-  const unique = new Set(movies.map((m) => m.category));
+  const categories = ["Kõik"];
+  const unique = new Set();
+  movies.forEach((m) => {
+    if (m.categories) {
+      m.categories.forEach((c) => unique.add(c));
+    } else if (m.category) {
+      unique.add(m.category);
+    }
+  });
   return [...categories, ...Array.from(unique).sort()];
 };
 
@@ -126,7 +142,13 @@ const Home = ({ onMovieSelect }) => {
         const pages = await Promise.all(
           Array.from({ length: 10 }, (_, i) => fetchPopularMovies(i + 1)),
         );
-        const allMovies = pages.flat();
+        // Deduplicate movies by ID
+        const seen = new Set();
+        const allMovies = pages.flat().filter((movie) => {
+          if (seen.has(movie.id)) return false;
+          seen.add(movie.id);
+          return true;
+        });
         cacheMovies(allMovies);
         dispatch({ type: "SET_MOVIES", payload: allMovies });
       } catch (err) {
@@ -198,7 +220,7 @@ const Home = ({ onMovieSelect }) => {
     return (
       <div className={styles.loadingContainer}>
         <div className={styles.spinner}></div>
-        <p>Loading movies...</p>
+        <p>Filmide laadimine...</p>
       </div>
     );
   }
@@ -206,7 +228,7 @@ const Home = ({ onMovieSelect }) => {
   if (state.error) {
     return (
       <div className={styles.errorContainer}>
-        <p>Error: {state.error}</p>
+        <p>Viga: {state.error}</p>
       </div>
     );
   }
@@ -227,8 +249,8 @@ const Home = ({ onMovieSelect }) => {
       <div className={styles.resultInfo}>
         {state.filteredMovies.length > 0 && (
           <p>
-            Found <strong>{state.filteredMovies.length}</strong> movie
-            {state.filteredMovies.length !== 1 ? "s" : ""}
+            Leitud <strong>{state.filteredMovies.length}</strong> film
+            {state.filteredMovies.length !== 1 ? "i" : ""}
           </p>
         )}
       </div>
@@ -244,8 +266,8 @@ const Home = ({ onMovieSelect }) => {
             disabled={state.isLoadingMore}
           >
             {state.isLoadingMore
-              ? "Loading more movies..."
-              : "Load More Movies"}
+              ? "Laadin veel filme..."
+              : "Laadi rohkem filme"}
           </button>
         </div>
       )}

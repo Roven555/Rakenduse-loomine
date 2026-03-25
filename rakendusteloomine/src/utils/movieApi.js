@@ -1,12 +1,12 @@
 // TMDB API Configuration
 const TMDB_API_KEY = import.meta.env.VITE_TMDB_API_KEY;
-const TMDB_BASE_URL = 'https://api.themoviedb.org/3';
-const TMDB_IMAGE_BASE_URL = 'https://image.tmdb.org/t/p';
+const TMDB_BASE_URL = "https://api.themoviedb.org/3";
+const TMDB_IMAGE_BASE_URL = "https://image.tmdb.org/t/p";
 
 // Validate API key is available
 if (!TMDB_API_KEY) {
   console.error(
-    'TMDB API Key is not set. Please add VITE_TMDB_API_KEY to your .env file',
+    "TMDB API Key is not set. Please add VITE_TMDB_API_KEY to your .env file",
   );
 }
 
@@ -30,14 +30,14 @@ export const fetchPopularMovies = async (page = 1) => {
     const data = await response.json();
 
     if (!data.results || !Array.isArray(data.results)) {
-      throw new Error('Invalid TMDB API response format');
+      throw new Error("Invalid TMDB API response format");
     }
 
     return data.results
       .filter((movie) => movie.poster_path && movie.backdrop_path)
       .map((movie) => transformTMDBMovie(movie));
   } catch (error) {
-    console.error('Error fetching movies from TMDB:', error);
+    console.error("Error fetching movies from TMDB:", error);
     throw error;
   }
 };
@@ -67,14 +67,14 @@ export const searchMovies = async (query, page = 1) => {
     const data = await response.json();
 
     if (!data.results || !Array.isArray(data.results)) {
-      throw new Error('Invalid TMDB API response format');
+      throw new Error("Invalid TMDB API response format");
     }
 
     return data.results
       .filter((movie) => movie.poster_path && movie.backdrop_path)
       .map((movie) => transformTMDBMovie(movie));
   } catch (error) {
-    console.error('Error searching movies:', error);
+    console.error("Error searching movies:", error);
     throw error;
   }
 };
@@ -105,7 +105,7 @@ export const fetchMovieCast = async (movieId) => {
     // Return top 10 cast members
     return data.cast.slice(0, 10).map((member) => member.name);
   } catch (error) {
-    console.error('Error fetching cast:', error);
+    console.error("Error fetching cast:", error);
     return [];
   }
 };
@@ -130,7 +130,7 @@ export const fetchMovieDetails = async (movieId) => {
     const data = await response.json();
     return transformTMDBMovie(data);
   } catch (error) {
-    console.error('Error fetching movie details:', error);
+    console.error("Error fetching movie details:", error);
     throw error;
   }
 };
@@ -141,33 +141,65 @@ export const fetchMovieDetails = async (movieId) => {
  * @returns {Object} Transformed movie object matching CineRate schema
  */
 function transformTMDBMovie(tmdbMovie) {
-  const releaseDate = tmdbMovie.release_date || '';
-  const year = releaseDate ? new Date(releaseDate).getFullYear() : 'Unknown';
+  const releaseDate = tmdbMovie.release_date || "";
+  const year = releaseDate ? new Date(releaseDate).getFullYear() : "Unknown";
 
-  // Get primary genre
-  let category = 'Unknown';
+  // Get all genres for this movie
+  let categories = [];
   if (Array.isArray(tmdbMovie.genres) && tmdbMovie.genres.length > 0) {
-    category = tmdbMovie.genres[0].name;
+    categories = tmdbMovie.genres.map((g) => mapGenreNameToEstonian(g.name));
   } else if (tmdbMovie.genre_ids && tmdbMovie.genre_ids.length > 0) {
-    // Use genre ID mapping for basic categorization when full genres not available
-    category = mapGenreIdToName(tmdbMovie.genre_ids[0]);
+    categories = tmdbMovie.genre_ids.map((id) => mapGenreIdToName(id));
+  }
+
+  if (categories.length === 0) {
+    categories = ["Tundmatu"];
   }
 
   return {
     id: tmdbMovie.id,
-    title: tmdbMovie.title || 'Unknown Title',
+    title: tmdbMovie.title || "Tundmatu pealkiri",
     year: year,
-    category: category,
+    category: categories[0],
+    categories: categories,
     rating: tmdbMovie.vote_average ? tmdbMovie.vote_average.toFixed(1) : 0,
     poster: tmdbMovie.poster_path
       ? `${TMDB_IMAGE_BASE_URL}/w400${tmdbMovie.poster_path}`
-      : 'https://via.placeholder.com/400x600?text=No+Poster',
+      : "https://via.placeholder.com/400x600?text=No+Poster",
     backdrop: tmdbMovie.backdrop_path
       ? `${TMDB_IMAGE_BASE_URL}/w1280${tmdbMovie.backdrop_path}`
-      : 'https://via.placeholder.com/1280x400?text=No+Backdrop',
-    synopsis: tmdbMovie.overview || 'No synopsis available.',
-    cast: [], // Will be fetched separately if needed
+      : "https://via.placeholder.com/1280x400?text=No+Backdrop",
+    synopsis: tmdbMovie.overview || "Süžee puudub.",
+    cast: [],
   };
+}
+
+/**
+ * Map English genre name to Estonian (for when TMDB returns full genre objects)
+ */
+function mapGenreNameToEstonian(name) {
+  const nameMap = {
+    Action: "Põnevus",
+    Adventure: "Seiklus",
+    Animation: "Animatsioon",
+    Comedy: "Komöödia",
+    Crime: "Krimi",
+    Documentary: "Dokumentaal",
+    Drama: "Draama",
+    Family: "Pere",
+    Fantasy: "Fantaasia",
+    History: "Ajalugu",
+    Horror: "Õudus",
+    Music: "Muusika",
+    Mystery: "Müsteerium",
+    Romance: "Romantika",
+    "Science Fiction": "Ulme",
+    "TV Movie": "Telefilm",
+    Thriller: "Põnevik",
+    War: "Sõda",
+    Western: "Vestern",
+  };
+  return nameMap[name] || name;
 }
 
 /**
@@ -177,28 +209,28 @@ function transformTMDBMovie(tmdbMovie) {
  */
 function mapGenreIdToName(genreId) {
   const genreMap = {
-    28: 'Action',
-    12: 'Adventure',
-    16: 'Animation',
-    35: 'Comedy',
-    80: 'Crime',
-    99: 'Documentary',
-    18: 'Drama',
-    10751: 'Family',
-    14: 'Fantasy',
-    36: 'History',
-    27: 'Horror',
-    10402: 'Music',
-    9648: 'Mystery',
-    10749: 'Romance',
-    878: 'Sci-Fi',
-    10770: 'TV Movie',
-    53: 'Thriller',
-    10752: 'War',
-    37: 'Western',
+    28: "Põnevus",
+    12: "Seiklus",
+    16: "Animatsioon",
+    35: "Komöödia",
+    80: "Krimi",
+    99: "Dokumentaal",
+    18: "Draama",
+    10751: "Pere",
+    14: "Fantaasia",
+    36: "Ajalugu",
+    27: "Õudus",
+    10402: "Muusika",
+    9648: "Müsteerium",
+    10749: "Romantika",
+    878: "Ulme",
+    10770: "Telefilm",
+    53: "Põnevik",
+    10752: "Sõda",
+    37: "Vestern",
   };
 
-  return genreMap[genreId] || 'Other';
+  return genreMap[genreId] || "Muu";
 }
 
 /**
@@ -207,7 +239,7 @@ function mapGenreIdToName(genreId) {
  */
 export const testAPIKey = async () => {
   if (!TMDB_API_KEY) {
-    console.error('TMDB API Key is not configured');
+    console.error("TMDB API Key is not configured");
     return false;
   }
 
@@ -217,7 +249,7 @@ export const testAPIKey = async () => {
     );
     return response.ok;
   } catch (error) {
-    console.error('API key test failed:', error);
+    console.error("API key test failed:", error);
     return false;
   }
 };

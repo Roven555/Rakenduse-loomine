@@ -6,8 +6,8 @@ const MovieList = ({ movies, onMovieClick }) => {
     return (
       <div className={styles.emptyState}>
         <span className={styles.emptyIcon}>🍿</span>
-        <h2>No Movies Found</h2>
-        <p>Try adjusting your filters or search query</p>
+        <h2>Ei leitud ühtegi filmi</h2>
+        <p>Kontrolli kas nimi on õigesti kirjutatud või proovi teisi filtreid</p>
       </div>
     );
   }
