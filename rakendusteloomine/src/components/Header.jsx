@@ -7,8 +7,10 @@ const Header = ({ currentView, onViewChange }) => {
   return (
     <header className={styles.header}>
       <div className={styles.container}>
-        <div className={styles.logo} onClick={() => onViewChange("home")}>
-          <img src="/logo.png" alt="FilmiRiiul" className={styles.logoImg} />
+        <div className={styles.logoRow}>
+          <div className={styles.logo} onClick={() => onViewChange("home")}>
+            <img src="/logo.png" alt="FilmiRiiul" className={styles.logoImg} />
+          </div>
         </div>
 
         <nav

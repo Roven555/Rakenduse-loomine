@@ -1,5 +1,5 @@
 .card {
-  background-color: var(--bg-secondary);
+  background: rgba(20, 20, 45, 0.7);
   border-radius: var(--border-radius);
   overflow: hidden;
   cursor: pointer;
@@ -7,11 +7,15 @@
   display: flex;
   flex-direction: column;
   height: 100%;
+  border: 1px solid rgba(168, 85, 247, 0.15);
 }
 
 .card:hover {
   transform: translateY(-8px);
-  box-shadow: 0 12px 24px rgba(0, 212, 255, 0.2);
+  box-shadow:
+    0 12px 24px rgba(0, 212, 255, 0.15),
+    0 0 40px rgba(168, 85, 247, 0.1);
+  border-color: rgba(0, 212, 255, 0.4);
 }
 
 .posterContainer {
@@ -125,11 +129,12 @@
 }
 
 .category {
-  background-color: var(--bg-tertiary);
+  background: rgba(168, 85, 247, 0.2);
   padding: 2px 8px;
   border-radius: 4px;
   color: var(--accent-blue);
   font-weight: 600;
+  border: 1px solid rgba(168, 85, 247, 0.3);
 }
 
 .rating {

@@ -1,6 +1,7 @@
 import { useReducer, useEffect, useContext } from "react";
 import SearchBar from "./SearchBar";
 import FilterPills from "./FilterPills";
+import SortSelect from "./SortSelect";
 import MovieList from "./MovieList";
 import styles from "./Home.module.css";
 import { fetchPopularMovies, searchMovies } from "../utils/movieApi";
@@ -12,6 +13,7 @@ const initialState = {
   filteredMovies: [],
   searchQuery: "",
   activeCategory: "Kõik",
+  activeSort: "popularity",
   isLoading: true,
   error: null,
   currentPage: 1,
@@ -31,7 +33,7 @@ const movieReducer = (state, action) => {
       return {
         ...state,
         movies: action.payload,
-        filteredMovies: filtered,
+        filteredMovies: sortMovies(filtered, state.activeSort),
         isLoading: false,
         error: null,
       };
@@ -43,7 +45,7 @@ const movieReducer = (state, action) => {
       return {
         ...state,
         searchQuery: action.payload,
-        filteredMovies: filtered,
+        filteredMovies: sortMovies(filtered, state.activeSort),
       };
     }
 
@@ -56,7 +58,20 @@ const movieReducer = (state, action) => {
       return {
         ...state,
         activeCategory: action.payload,
-        filteredMovies: filtered,
+        filteredMovies: sortMovies(filtered, state.activeSort),
+      };
+    }
+
+    case "SET_SORT": {
+      const filtered = filterMovies(
+        state.movies,
+        state.searchQuery,
+        state.activeCategory,
+      );
+      return {
+        ...state,
+        activeSort: action.payload,
+        filteredMovies: sortMovies(filtered, action.payload),
       };
     }
 
@@ -82,7 +97,7 @@ const movieReducer = (state, action) => {
       return {
         ...state,
         movies: newMovies,
-        filteredMovies: filtered,
+        filteredMovies: sortMovies(filtered, state.activeSort),
         currentPage:
           action.payload.length > 0 ? state.currentPage + 1 : state.currentPage,
         isLoadingMore: false,
@@ -100,6 +115,28 @@ const movieReducer = (state, action) => {
 
     default:
       return state;
+  }
+};
+
+// Helper function to sort movies
+const sortMovies = (movies, sortBy) => {
+  const sorted = [...movies];
+  switch (sortBy) {
+    case "rating-desc":
+      return sorted.sort((a, b) => parseFloat(b.rating) - parseFloat(a.rating));
+    case "rating-asc":
+      return sorted.sort((a, b) => parseFloat(a.rating) - parseFloat(b.rating));
+    case "year-desc":
+      return sorted.sort((a, b) => (b.year || 0) - (a.year || 0));
+    case "year-asc":
+      return sorted.sort((a, b) => (a.year || 0) - (b.year || 0));
+    case "title-asc":
+      return sorted.sort((a, b) => a.title.localeCompare(b.title, "et"));
+    case "title-desc":
+      return sorted.sort((a, b) => b.title.localeCompare(a.title, "et"));
+    case "popularity":
+    default:
+      return sorted;
   }
 };
 
@@ -197,6 +234,10 @@ const Home = ({ onMovieSelect }) => {
     dispatch({ type: "SET_CATEGORY", payload: category });
   };
 
+  const handleSortChange = (sortBy) => {
+    dispatch({ type: "SET_SORT", payload: sortBy });
+  };
+
   const handleMovieClick = (movieId) => {
     onMovieSelect(movieId);
   };
@@ -246,13 +287,19 @@ const Home = ({ onMovieSelect }) => {
         activeCategory={state.activeCategory}
         onCategoryChange={handleCategoryChange}
       />
-      <div className={styles.resultInfo}>
-        {state.filteredMovies.length > 0 && (
-          <p>
-            Leitud <strong>{state.filteredMovies.length}</strong> film
-            {state.filteredMovies.length !== 1 ? "i" : ""}
-          </p>
-        )}
+      <div className={styles.toolbar}>
+        <div className={styles.resultInfo}>
+          {state.filteredMovies.length > 0 && (
+            <p>
+              Leitud <strong>{state.filteredMovies.length}</strong> film
+              {state.filteredMovies.length !== 1 ? "i" : ""}
+            </p>
+          )}
+        </div>
+        <SortSelect
+          activeSort={state.activeSort}
+          onSortChange={handleSortChange}
+        />
       </div>
       <MovieList
         movies={state.filteredMovies}

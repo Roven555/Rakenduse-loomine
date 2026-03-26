@@ -10,6 +10,26 @@ if (!TMDB_API_KEY) {
   );
 }
 
+// Translation cache to avoid repeated translations
+const translationCache = new Map();
+
+async function translateToEstonian(text) {
+  if (!text) return "Süžee puudub.";
+  if (translationCache.has(text)) return translationCache.get(text);
+
+  try {
+    const response = await fetch(
+      `https://translate.googleapis.com/translate_a/single?client=gtx&sl=en&tl=et&dt=t&q=${encodeURIComponent(text)}`,
+    );
+    const data = await response.json();
+    const translated = data[0].map((segment) => segment[0]).join("");
+    translationCache.set(text, translated);
+    return translated;
+  } catch {
+    return text;
+  }
+}
+
 /**
  * Fetch popular movies from TMDB
  * @param {number} page - Page number for pagination
@@ -33,9 +53,18 @@ export const fetchPopularMovies = async (page = 1) => {
       throw new Error("Invalid TMDB API response format");
     }
 
-    return data.results
+    const movies = data.results
       .filter((movie) => movie.poster_path && movie.backdrop_path)
       .map((movie) => transformTMDBMovie(movie));
+
+    // Translate all synopses in parallel
+    await Promise.all(
+      movies.map(async (movie) => {
+        movie.synopsis = await translateToEstonian(movie.synopsis);
+      }),
+    );
+
+    return movies;
   } catch (error) {
     console.error("Error fetching movies from TMDB:", error);
     throw error;
@@ -70,9 +99,17 @@ export const searchMovies = async (query, page = 1) => {
       throw new Error("Invalid TMDB API response format");
     }
 
-    return data.results
+    const movies = data.results
       .filter((movie) => movie.poster_path && movie.backdrop_path)
       .map((movie) => transformTMDBMovie(movie));
+
+    await Promise.all(
+      movies.map(async (movie) => {
+        movie.synopsis = await translateToEstonian(movie.synopsis);
+      }),
+    );
+
+    return movies;
   } catch (error) {
     console.error("Error searching movies:", error);
     throw error;
@@ -128,7 +165,9 @@ export const fetchMovieDetails = async (movieId) => {
     }
 
     const data = await response.json();
-    return transformTMDBMovie(data);
+    const movie = transformTMDBMovie(data);
+    movie.synopsis = await translateToEstonian(movie.synopsis);
+    return movie;
   } catch (error) {
     console.error("Error fetching movie details:", error);
     throw error;

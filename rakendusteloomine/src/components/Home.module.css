@@ -2,10 +2,18 @@
   flex-grow: 1;
 }
 
-.resultInfo {
+.toolbar {
   max-width: 1400px;
   margin: 0 auto;
   padding: 0 20px 16px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+.resultInfo {
   color: var(--text-secondary);
   font-size: 14px;
 }

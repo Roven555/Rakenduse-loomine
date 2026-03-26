@@ -1,11 +1,14 @@
 .header {
-  background-color: var(--bg-secondary);
-  border-bottom: 1px solid var(--bg-tertiary);
-  padding: 16px 0;
+  background: rgba(15, 15, 35, 0.8);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border-bottom: 2px solid transparent;
+  border-image: linear-gradient(90deg, #00d4ff, #a855f7, #ff2d95) 1;
+  padding: 8px 0;
   position: sticky;
   top: 0;
   z-index: 100;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+  box-shadow: 0 4px 30px rgba(0, 0, 0, 0.4);
 }
 
 .container {
@@ -13,8 +16,9 @@
   margin: 0 auto;
   padding: 0 20px;
   display: flex;
-  justify-content: space-between;
+  flex-direction: column;
   align-items: center;
+  gap: 4px;
 }
 
 .logo {
@@ -37,9 +41,16 @@
   font-size: 28px;
 }
 
+.logoRow {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+}
+
 .logoImg {
-  height: 55px;
-  width: auto;
+  height: 80px;
+  width: 100%;
+  max-width: 900px;
   object-fit: contain;
 }
 
@@ -67,7 +78,7 @@
   left: 0;
   width: 0;
   height: 2px;
-  background-color: var(--accent-blue);
+  background: linear-gradient(90deg, #00d4ff, #a855f7);
   transition: width 0.3s ease;
 }
 

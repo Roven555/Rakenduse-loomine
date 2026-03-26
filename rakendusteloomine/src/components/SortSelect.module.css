@@ -1,0 +1,58 @@
+.sortContainer {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.sortLabel {
+  color: var(--text-secondary);
+  font-size: 14px;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.sortSelect {
+  padding: 8px 14px;
+  background: rgba(20, 20, 45, 0.6);
+  border: 1px solid rgba(168, 85, 247, 0.2);
+  border-radius: 20px;
+  color: var(--text-primary);
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: var(--transition);
+  outline: none;
+  appearance: none;
+  -webkit-appearance: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' fill='%2300d4ff' viewBox='0 0 16 16'%3E%3Cpath d='M8 11L3 6h10z'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 12px center;
+  padding-right: 32px;
+}
+
+.sortSelect:hover {
+  border-color: var(--accent-blue);
+  box-shadow: 0 4px 15px rgba(0, 212, 255, 0.15);
+}
+
+.sortSelect:focus {
+  border-color: var(--accent-blue);
+  box-shadow: 0 0 20px rgba(0, 212, 255, 0.2);
+}
+
+.sortSelect option {
+  background: #14142d;
+  color: var(--text-primary);
+}
+
+@media (max-width: 768px) {
+  .sortContainer {
+    gap: 8px;
+  }
+
+  .sortSelect {
+    font-size: 13px;
+    padding: 6px 12px;
+    padding-right: 28px;
+  }
+}
