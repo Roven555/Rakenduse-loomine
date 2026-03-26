@@ -1,11 +1,17 @@
 import { useReducer, useEffect, useContext } from "react";
 import SearchBar from "./SearchBar";
 import FilterPills from "./FilterPills";
+import MoodFilter, { MOODS } from "./MoodFilter";
+import RuntimeFilter, { RUNTIME_OPTIONS } from "./RuntimeFilter";
 import SortSelect from "./SortSelect";
 import RandomMoviePicker from "./RandomMoviePicker";
 import MovieList from "./MovieList";
 import styles from "./Home.module.css";
-import { fetchPopularMovies, searchMovies } from "../utils/movieApi";
+import {
+  fetchPopularMovies,
+  searchMovies,
+  fetchBatchRuntimes,
+} from "../utils/movieApi";
 import { MovieDataContext } from "../contexts/movieDataContext";
 
 // Initial state for useReducer
@@ -14,6 +20,8 @@ const initialState = {
   filteredMovies: [],
   searchQuery: "",
   activeCategory: "Kõik",
+  activeMood: "all",
+  activeRuntime: "any",
   activeSort: "popularity",
   isLoading: true,
   error: null,
@@ -30,6 +38,8 @@ const movieReducer = (state, action) => {
         action.payload,
         state.searchQuery,
         state.activeCategory,
+        state.activeMood,
+        state.activeRuntime,
       );
       return {
         ...state,
@@ -42,7 +52,13 @@ const movieReducer = (state, action) => {
 
     case "SET_SEARCH_QUERY": {
       const query = action.payload.toLowerCase();
-      const filtered = filterMovies(state.movies, query, state.activeCategory);
+      const filtered = filterMovies(
+        state.movies,
+        query,
+        state.activeCategory,
+        state.activeMood,
+        state.activeRuntime,
+      );
       return {
         ...state,
         searchQuery: action.payload,
@@ -55,10 +71,42 @@ const movieReducer = (state, action) => {
         state.movies,
         state.searchQuery,
         action.payload,
+        state.activeMood,
+        state.activeRuntime,
       );
       return {
         ...state,
         activeCategory: action.payload,
+        filteredMovies: sortMovies(filtered, state.activeSort),
+      };
+    }
+
+    case "SET_MOOD": {
+      const filtered = filterMovies(
+        state.movies,
+        state.searchQuery,
+        state.activeCategory,
+        action.payload,
+        state.activeRuntime,
+      );
+      return {
+        ...state,
+        activeMood: action.payload,
+        filteredMovies: sortMovies(filtered, state.activeSort),
+      };
+    }
+
+    case "SET_RUNTIME": {
+      const filtered = filterMovies(
+        state.movies,
+        state.searchQuery,
+        state.activeCategory,
+        state.activeMood,
+        action.payload,
+      );
+      return {
+        ...state,
+        activeRuntime: action.payload,
         filteredMovies: sortMovies(filtered, state.activeSort),
       };
     }
@@ -68,6 +116,8 @@ const movieReducer = (state, action) => {
         state.movies,
         state.searchQuery,
         state.activeCategory,
+        state.activeMood,
+        state.activeRuntime,
       );
       return {
         ...state,
@@ -94,6 +144,8 @@ const movieReducer = (state, action) => {
         newMovies,
         state.searchQuery,
         state.activeCategory,
+        state.activeMood,
+        state.activeRuntime,
       );
       return {
         ...state,
@@ -113,6 +165,27 @@ const movieReducer = (state, action) => {
         isLoading: false,
         isLoadingMore: false,
       };
+
+    case "UPDATE_RUNTIMES": {
+      const runtimeMap = action.payload;
+      const updatedMovies = state.movies.map((movie) =>
+        runtimeMap[movie.id]
+          ? { ...movie, runtime: runtimeMap[movie.id] }
+          : movie,
+      );
+      const filtered = filterMovies(
+        updatedMovies,
+        state.searchQuery,
+        state.activeCategory,
+        state.activeMood,
+        state.activeRuntime,
+      );
+      return {
+        ...state,
+        movies: updatedMovies,
+        filteredMovies: sortMovies(filtered, state.activeSort),
+      };
+    }
 
     default:
       return state;
@@ -142,14 +215,47 @@ const sortMovies = (movies, sortBy) => {
 };
 
 // Helper function to filter movies
-const filterMovies = (movies, searchQuery, category) => {
+const filterMovies = (
+  movies,
+  searchQuery,
+  category,
+  moodId = "all",
+  runtimeId = "any",
+) => {
+  const mood = MOODS.find((m) => m.id === moodId);
+  const runtimeOption = RUNTIME_OPTIONS.find((r) => r.id === runtimeId);
+
   return movies.filter((movie) => {
     const matchesSearch = movie.title.toLowerCase().includes(searchQuery);
     const matchesCategory =
       category === "Kõik" ||
       (movie.categories && movie.categories.includes(category)) ||
       movie.category === category;
-    return matchesSearch && matchesCategory;
+
+    // Mood filter: check if movie has any genre that matches the mood
+    const matchesMood =
+      !mood ||
+      mood.id === "all" ||
+      mood.genres.length === 0 ||
+      (movie.categories &&
+        movie.categories.some((c) => mood.genres.includes(c))) ||
+      mood.genres.includes(movie.category);
+
+    // Runtime filter
+    let matchesRuntime = true;
+    if (runtimeOption && runtimeOption.maxMinutes !== null) {
+      if (!movie.runtime) {
+        // If runtime unknown, include it (don't exclude)
+        matchesRuntime = true;
+      } else if (runtimeOption.maxMinutes === -1) {
+        // "Long films" = 150+ minutes
+        matchesRuntime = movie.runtime >= 150;
+      } else {
+        matchesRuntime = movie.runtime <= runtimeOption.maxMinutes;
+      }
+    }
+
+    return matchesSearch && matchesCategory && matchesMood && matchesRuntime;
   });
 };
 
@@ -189,6 +295,16 @@ const Home = ({ onMovieSelect }) => {
         });
         cacheMovies(allMovies);
         dispatch({ type: "SET_MOVIES", payload: allMovies });
+
+        // Background-fetch runtimes for runtime filter
+        const idsWithoutRuntime = allMovies
+          .filter((m) => !m.runtime)
+          .map((m) => m.id);
+        if (idsWithoutRuntime.length > 0) {
+          fetchBatchRuntimes(idsWithoutRuntime, (runtimeMap) => {
+            dispatch({ type: "UPDATE_RUNTIMES", payload: runtimeMap });
+          });
+        }
       } catch (err) {
         dispatch({
           type: "SET_ERROR",
@@ -239,6 +355,14 @@ const Home = ({ onMovieSelect }) => {
     dispatch({ type: "SET_SORT", payload: sortBy });
   };
 
+  const handleMoodChange = (moodId) => {
+    dispatch({ type: "SET_MOOD", payload: moodId });
+  };
+
+  const handleRuntimeChange = (runtimeId) => {
+    dispatch({ type: "SET_RUNTIME", payload: runtimeId });
+  };
+
   const handleMovieClick = (movieId) => {
     onMovieSelect(movieId);
   };
@@ -287,6 +411,14 @@ const Home = ({ onMovieSelect }) => {
         categories={categories}
         activeCategory={state.activeCategory}
         onCategoryChange={handleCategoryChange}
+      />
+      <MoodFilter
+        activeMood={state.activeMood}
+        onMoodChange={handleMoodChange}
+      />
+      <RuntimeFilter
+        activeRuntime={state.activeRuntime}
+        onRuntimeChange={handleRuntimeChange}
       />
       <RandomMoviePicker
         movies={state.movies}

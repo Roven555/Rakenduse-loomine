@@ -124,6 +124,29 @@
   font-size: 18px;
 }
 
+.runtimeInfo {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  flex-wrap: wrap;
+  padding: 12px 16px;
+  background: rgba(20, 20, 45, 0.6);
+  border: 1px solid rgba(168, 85, 247, 0.2);
+  border-radius: var(--border-radius);
+}
+
+.runtimeBadge {
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--accent-blue);
+  white-space: nowrap;
+}
+
+.endTime {
+  font-size: 14px;
+  color: var(--text-secondary);
+}
+
 .section {
   display: flex;
   flex-direction: column;
@@ -165,7 +188,7 @@
 
 .castList {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
   gap: 12px;
 }
 
@@ -177,17 +200,61 @@
   color: var(--text-primary);
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: 12px;
   transition: var(--transition);
+  border: 1px solid transparent;
 }
 
 .castMember:hover {
   background-color: var(--bg-tertiary);
   transform: translateY(-2px);
+  border-color: var(--accent-purple);
+  box-shadow: 0 4px 16px rgba(168, 85, 247, 0.2);
+}
+
+.castPhoto {
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  object-fit: cover;
+  flex-shrink: 0;
+  border: 2px solid var(--bg-tertiary);
 }
 
 .castIcon {
-  font-size: 16px;
+  font-size: 20px;
+  width: 44px;
+  height: 44px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  background: var(--bg-tertiary);
+  border-radius: 50%;
+}
+
+.castInfo {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+
+.castName {
+  font-weight: 600;
+  color: var(--text-primary);
+  font-size: 14px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.castCharacter {
+  font-size: 12px;
+  color: var(--text-secondary);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .actionSection {

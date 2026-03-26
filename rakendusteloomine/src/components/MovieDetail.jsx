@@ -1,9 +1,13 @@
 import { useContext, useState, useEffect } from "react";
 import { MovieContext } from "../contexts/movieContext";
-import { fetchMovieCast, fetchMovieTrailer } from "../utils/movieApi";
+import {
+  fetchMovieCast,
+  fetchMovieTrailer,
+  fetchMovieRuntime,
+} from "../utils/movieApi";
 import styles from "./MovieDetail.module.css";
 
-const MovieDetail = ({ movie, onBack }) => {
+const MovieDetail = ({ movie, onBack, onActorSelect }) => {
   const {
     isLiked,
     isDisliked,
@@ -14,8 +18,9 @@ const MovieDetail = ({ movie, onBack }) => {
   } = useContext(MovieContext);
   const [cast, setCast] = useState([]);
   const [trailerKey, setTrailerKey] = useState(null);
+  const [runtime, setRuntime] = useState(null);
 
-  // Fetch cast and trailer data when movie changes
+  // Fetch cast, trailer and runtime data when movie changes
   useEffect(() => {
     if (movie && movie.id) {
       fetchMovieCast(movie.id)
@@ -33,8 +38,31 @@ const MovieDetail = ({ movie, onBack }) => {
         .catch((error) => {
           console.error("Failed to load trailer:", error);
         });
+
+      if (movie.runtime) {
+        setRuntime(movie.runtime);
+      } else {
+        fetchMovieRuntime(movie.id).then((rt) => setRuntime(rt));
+      }
     }
   }, [movie]);
+
+  const formatRuntime = (minutes) => {
+    if (!minutes) return null;
+    const h = Math.floor(minutes / 60);
+    const m = minutes % 60;
+    return h > 0 ? `${h}h ${m}min` : `${m}min`;
+  };
+
+  const getEndTime = (minutes) => {
+    if (!minutes) return null;
+    const now = new Date();
+    now.setMinutes(now.getMinutes() + minutes);
+    return now.toLocaleTimeString("et-EE", {
+      hour: "2-digit",
+      minute: "2-digit",
+    });
+  };
 
   if (!movie) {
     return (
@@ -90,6 +118,18 @@ const MovieDetail = ({ movie, onBack }) => {
               <span className={styles.rating}>★ {movie.rating}/10</span>
             </div>
 
+            {/* Runtime & End Time */}
+            {runtime && (
+              <div className={styles.runtimeInfo}>
+                <span className={styles.runtimeBadge}>
+                  🕐 {formatRuntime(runtime)}
+                </span>
+                <span className={styles.endTime}>
+                  Kui alustad praegu, saab läbi kell {getEndTime(runtime)}
+                </span>
+              </div>
+            )}
+
             {/* Trailer */}
             {trailerKey && (
               <div className={styles.section}>
@@ -117,10 +157,32 @@ const MovieDetail = ({ movie, onBack }) => {
               <h2 className={styles.sectionTitle}>Näitlejad</h2>
               <div className={styles.castList}>
                 {cast.length > 0 ? (
-                  cast.map((actor, index) => (
-                    <div key={index} className={styles.castMember}>
-                      <span className={styles.castIcon}>👤</span>
-                      {actor}
+                  cast.map((actor) => (
+                    <div
+                      key={actor.id}
+                      className={styles.castMember}
+                      onClick={() =>
+                        onActorSelect && onActorSelect(actor.id, actor.name)
+                      }
+                      style={{ cursor: onActorSelect ? "pointer" : "default" }}
+                    >
+                      {actor.photo ? (
+                        <img
+                          src={actor.photo}
+                          alt={actor.name}
+                          className={styles.castPhoto}
+                        />
+                      ) : (
+                        <span className={styles.castIcon}>👤</span>
+                      )}
+                      <div className={styles.castInfo}>
+                        <span className={styles.castName}>{actor.name}</span>
+                        {actor.character && (
+                          <span className={styles.castCharacter}>
+                            {actor.character}
+                          </span>
+                        )}
+                      </div>
                     </div>
                   ))
                 ) : (

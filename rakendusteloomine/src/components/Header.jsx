@@ -26,6 +26,15 @@ const Header = ({ currentView, onViewChange }) => {
             Avaleht
           </button>
           <button
+            className={`${styles.navLink} ${currentView === "actors" ? styles.active : ""}`}
+            onClick={() => {
+              onViewChange("actors");
+              setMobileMenuOpen(false);
+            }}
+          >
+            Näitlejad
+          </button>
+          <button
             className={`${styles.navLink} ${currentView === "profile" ? styles.active : ""}`}
             onClick={() => {
               onViewChange("profile");

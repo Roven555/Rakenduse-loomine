@@ -119,7 +119,7 @@ export const searchMovies = async (query, page = 1) => {
 /**
  * Fetch cast for a specific movie
  * @param {number} movieId - TMDB movie ID
- * @returns {Promise<Array>} Array of cast member names
+ * @returns {Promise<Array>} Array of cast member objects { id, name, character, photo }
  */
 export const fetchMovieCast = async (movieId) => {
   try {
@@ -139,10 +139,94 @@ export const fetchMovieCast = async (movieId) => {
       return [];
     }
 
-    // Return top 10 cast members
-    return data.cast.slice(0, 10).map((member) => member.name);
+    // Return top 10 cast members with full info
+    return data.cast.slice(0, 10).map((member) => ({
+      id: member.id,
+      name: member.name,
+      character: member.character || "",
+      photo: member.profile_path
+        ? `${TMDB_IMAGE_BASE_URL}/w185${member.profile_path}`
+        : null,
+    }));
   } catch (error) {
     console.error("Error fetching cast:", error);
+    return [];
+  }
+};
+
+/**
+ * Fetch actor details from TMDB
+ * @param {number} actorId - TMDB person ID
+ * @returns {Promise<Object>} Actor details { id, name, photo, biography, birthday, placeOfBirth }
+ */
+export const fetchActorDetails = async (actorId) => {
+  try {
+    const response = await fetch(
+      `${TMDB_BASE_URL}/person/${actorId}?api_key=${TMDB_API_KEY}&language=en-US`,
+    );
+
+    if (!response.ok) {
+      throw new Error(`TMDB API error: ${response.status}`);
+    }
+
+    const data = await response.json();
+    const biography = data.biography
+      ? await translateToEstonian(data.biography.substring(0, 1000))
+      : "Biograafia puudub.";
+
+    return {
+      id: data.id,
+      name: data.name,
+      photo: data.profile_path
+        ? `${TMDB_IMAGE_BASE_URL}/w400${data.profile_path}`
+        : null,
+      biography,
+      birthday: data.birthday || null,
+      placeOfBirth: data.place_of_birth || null,
+    };
+  } catch (error) {
+    console.error("Error fetching actor details:", error);
+    throw error;
+  }
+};
+
+/**
+ * Fetch all movies an actor has appeared in
+ * @param {number} actorId - TMDB person ID
+ * @returns {Promise<Array>} Array of transformed movie objects
+ */
+export const fetchActorMovies = async (actorId) => {
+  try {
+    const response = await fetch(
+      `${TMDB_BASE_URL}/person/${actorId}/movie_credits?api_key=${TMDB_API_KEY}&language=en-US`,
+    );
+
+    if (!response.ok) {
+      throw new Error(`TMDB API error: ${response.status}`);
+    }
+
+    const data = await response.json();
+
+    if (!data.cast || !Array.isArray(data.cast)) {
+      return [];
+    }
+
+    // Filter movies with posters and sort by popularity
+    const movies = data.cast
+      .filter((movie) => movie.poster_path)
+      .sort((a, b) => (b.popularity || 0) - (a.popularity || 0))
+      .slice(0, 30)
+      .map((movie) => transformTMDBMovie(movie));
+
+    await Promise.all(
+      movies.map(async (movie) => {
+        movie.synopsis = await translateToEstonian(movie.synopsis);
+      }),
+    );
+
+    return movies;
+  } catch (error) {
+    console.error("Error fetching actor movies:", error);
     return [];
   }
 };
@@ -171,6 +255,53 @@ export const fetchMovieDetails = async (movieId) => {
   } catch (error) {
     console.error("Error fetching movie details:", error);
     throw error;
+  }
+};
+
+/**
+ * Fetch movie runtime from TMDB
+ * @param {number} movieId - TMDB movie ID
+ * @returns {Promise<number|null>} Runtime in minutes or null
+ */
+export const fetchMovieRuntime = async (movieId) => {
+  try {
+    const response = await fetch(
+      `${TMDB_BASE_URL}/movie/${movieId}?api_key=${TMDB_API_KEY}&language=en-US`,
+    );
+
+    if (!response.ok) return null;
+
+    const data = await response.json();
+    return data.runtime || null;
+  } catch {
+    return null;
+  }
+};
+
+/**
+ * Fetch runtimes for multiple movies in batches
+ * @param {Array<number>} movieIds - Array of TMDB movie IDs
+ * @param {function} onBatch - Callback called with {id: runtime} map after each batch
+ * @param {number} batchSize - How many to fetch at once (default 8)
+ */
+export const fetchBatchRuntimes = async (movieIds, onBatch, batchSize = 8) => {
+  for (let i = 0; i < movieIds.length; i += batchSize) {
+    const batch = movieIds.slice(i, i + batchSize);
+    const results = await Promise.all(
+      batch.map(async (id) => {
+        const runtime = await fetchMovieRuntime(id);
+        return { id, runtime };
+      }),
+    );
+
+    const runtimeMap = {};
+    results.forEach(({ id, runtime }) => {
+      if (runtime) runtimeMap[id] = runtime;
+    });
+
+    if (Object.keys(runtimeMap).length > 0) {
+      onBatch(runtimeMap);
+    }
   }
 };
 
@@ -245,6 +376,7 @@ function transformTMDBMovie(tmdbMovie) {
       ? `${TMDB_IMAGE_BASE_URL}/w1280${tmdbMovie.backdrop_path}`
       : "https://via.placeholder.com/1280x400?text=No+Backdrop",
     synopsis: tmdbMovie.overview || "Süžee puudub.",
+    runtime: tmdbMovie.runtime || null,
     cast: [],
   };
 }
@@ -326,5 +458,82 @@ export const testAPIKey = async () => {
   } catch (error) {
     console.error("API key test failed:", error);
     return false;
+  }
+};
+
+/**
+ * Fetch popular actors from TMDB
+ * @param {number} page - Page number for pagination
+ * @returns {Promise<{actors: Array, totalPages: number}>}
+ */
+export const fetchPopularActors = async (page = 1) => {
+  try {
+    const response = await fetch(
+      `${TMDB_BASE_URL}/person/popular?api_key=${TMDB_API_KEY}&language=en-US&page=${page}`,
+    );
+
+    if (!response.ok) {
+      throw new Error(`TMDB API error: ${response.status}`);
+    }
+
+    const data = await response.json();
+
+    const actors = (data.results || []).map((person) => ({
+      id: person.id,
+      name: person.name,
+      photo: person.profile_path
+        ? `${TMDB_IMAGE_BASE_URL}/w185${person.profile_path}`
+        : null,
+      knownFor: (person.known_for || [])
+        .filter((item) => item.title)
+        .map((item) => item.title)
+        .slice(0, 3),
+    }));
+
+    return { actors, totalPages: data.total_pages || 1 };
+  } catch (error) {
+    console.error("Error fetching popular actors:", error);
+    return { actors: [], totalPages: 1 };
+  }
+};
+
+/**
+ * Search actors by name from TMDB
+ * @param {string} query - Search query
+ * @param {number} page - Page number
+ * @returns {Promise<{actors: Array, totalPages: number}>}
+ */
+export const searchActors = async (query, page = 1) => {
+  if (!query.trim()) return { actors: [], totalPages: 1 };
+
+  try {
+    const response = await fetch(
+      `${TMDB_BASE_URL}/search/person?api_key=${TMDB_API_KEY}&query=${encodeURIComponent(query)}&page=${page}&language=en-US`,
+    );
+
+    if (!response.ok) {
+      throw new Error(`TMDB API error: ${response.status}`);
+    }
+
+    const data = await response.json();
+
+    const actors = (data.results || [])
+      .filter((person) => person.known_for_department === "Acting")
+      .map((person) => ({
+        id: person.id,
+        name: person.name,
+        photo: person.profile_path
+          ? `${TMDB_IMAGE_BASE_URL}/w185${person.profile_path}`
+          : null,
+        knownFor: (person.known_for || [])
+          .filter((item) => item.title)
+          .map((item) => item.title)
+          .slice(0, 3),
+      }));
+
+    return { actors, totalPages: data.total_pages || 1 };
+  } catch (error) {
+    console.error("Error searching actors:", error);
+    return { actors: [], totalPages: 1 };
   }
 };
