@@ -3,8 +3,14 @@ import { MovieContext } from "../contexts/movieContext";
 import styles from "./MovieCard.module.css";
 
 const MovieCard = ({ movie, onCardClick }) => {
-  const { isLiked, isDisliked, toggleLike, toggleDislike } =
-    useContext(MovieContext);
+  const {
+    isLiked,
+    isDisliked,
+    isInWatchlist,
+    toggleLike,
+    toggleDislike,
+    toggleWatchlist,
+  } = useContext(MovieContext);
 
   const handleLikeClick = (e) => {
     e.stopPropagation();
@@ -16,6 +22,11 @@ const MovieCard = ({ movie, onCardClick }) => {
     toggleDislike(movie.id);
   };
 
+  const handleWatchlistClick = (e) => {
+    e.stopPropagation();
+    toggleWatchlist(movie.id);
+  };
+
   return (
     <div
       className={styles.card}
@@ -24,6 +35,11 @@ const MovieCard = ({ movie, onCardClick }) => {
       tabIndex={0}
       onKeyPress={(e) => e.key === "Enter" && onCardClick(movie.id)}
     >
+      {isInWatchlist(movie.id) && (
+        <div className={styles.watchlistBadge} title="Minu nimekirjas">
+          🔖
+        </div>
+      )}
       <div className={styles.posterContainer}>
         <img
           src={movie.poster}
@@ -46,6 +62,13 @@ const MovieCard = ({ movie, onCardClick }) => {
               title="Ei meeldi"
             >
               ✕ Ei meeldi
+            </button>
+            <button
+              className={`${styles.actionBtn} ${isInWatchlist(movie.id) ? styles.watchlisted : ""}`}
+              onClick={handleWatchlistClick}
+              title="Minu nimekiri"
+            >
+              🔖 {isInWatchlist(movie.id) ? "Nimekirjas" : "Vaatan hiljem"}
             </button>
           </div>
         </div>

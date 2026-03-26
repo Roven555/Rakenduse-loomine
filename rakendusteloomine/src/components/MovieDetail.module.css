@@ -144,6 +144,25 @@
   margin: 0;
 }
 
+.trailerWrapper {
+  position: relative;
+  width: 100%;
+  padding-bottom: 56.25%;
+  border-radius: var(--border-radius);
+  overflow: hidden;
+  background: var(--bg-secondary);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
+}
+
+.trailerIframe {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  border: none;
+}
+
 .castList {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
@@ -219,6 +238,16 @@
 .actionBtn.disliked:hover {
   background-color: #616161;
   color: var(--text-primary);
+}
+
+.actionBtn.watchlisted {
+  background: linear-gradient(135deg, #00d4ff, #a855f7);
+  color: #fff;
+  box-shadow: 0 0 16px rgba(0, 212, 255, 0.4);
+}
+
+.actionBtn.watchlisted:hover {
+  background: linear-gradient(135deg, #a855f7, #ff2d95);
 }
 
 .icon {

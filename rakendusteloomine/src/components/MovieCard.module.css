@@ -8,6 +8,7 @@
   flex-direction: column;
   height: 100%;
   border: 1px solid rgba(168, 85, 247, 0.15);
+  position: relative;
 }
 
 .card:hover {
@@ -97,6 +98,21 @@
   background-color: #424242;
   color: var(--text-secondary);
   box-shadow: 0 0 12px rgba(66, 66, 66, 0.4);
+}
+
+.actionBtn.watchlisted {
+  background: linear-gradient(135deg, #00d4ff, #a855f7);
+  color: #fff;
+  box-shadow: 0 0 12px rgba(0, 212, 255, 0.4);
+}
+
+.watchlistBadge {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  z-index: 5;
+  font-size: 20px;
+  filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.6));
 }
 
 .info {

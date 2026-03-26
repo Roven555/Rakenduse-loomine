@@ -2,6 +2,7 @@ import { useReducer, useEffect, useContext } from "react";
 import SearchBar from "./SearchBar";
 import FilterPills from "./FilterPills";
 import SortSelect from "./SortSelect";
+import RandomMoviePicker from "./RandomMoviePicker";
 import MovieList from "./MovieList";
 import styles from "./Home.module.css";
 import { fetchPopularMovies, searchMovies } from "../utils/movieApi";
@@ -286,6 +287,11 @@ const Home = ({ onMovieSelect }) => {
         categories={categories}
         activeCategory={state.activeCategory}
         onCategoryChange={handleCategoryChange}
+      />
+      <RandomMoviePicker
+        movies={state.movies}
+        categories={categories}
+        onMovieClick={handleMovieClick}
       />
       <div className={styles.toolbar}>
         <div className={styles.resultInfo}>

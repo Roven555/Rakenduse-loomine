@@ -175,6 +175,42 @@ export const fetchMovieDetails = async (movieId) => {
 };
 
 /**
+ * Fetch movie trailer from TMDB
+ * @param {number} movieId - TMDB movie ID
+ * @returns {Promise<string|null>} YouTube video key or null
+ */
+export const fetchMovieTrailer = async (movieId) => {
+  try {
+    const response = await fetch(
+      `${TMDB_BASE_URL}/movie/${movieId}/videos?api_key=${TMDB_API_KEY}&language=en-US`,
+    );
+
+    if (!response.ok) {
+      return null;
+    }
+
+    const data = await response.json();
+
+    if (!data.results || !Array.isArray(data.results)) {
+      return null;
+    }
+
+    // Find official trailer first, then any trailer, then any teaser
+    const trailer =
+      data.results.find(
+        (v) => v.site === "YouTube" && v.type === "Trailer" && v.official,
+      ) ||
+      data.results.find((v) => v.site === "YouTube" && v.type === "Trailer") ||
+      data.results.find((v) => v.site === "YouTube" && v.type === "Teaser");
+
+    return trailer ? trailer.key : null;
+  } catch (error) {
+    console.error("Error fetching trailer:", error);
+    return null;
+  }
+};
+
+/**
  * Transform TMDB movie object to CineRate schema
  * @param {Object} tmdbMovie - Raw TMDB movie object
  * @returns {Object} Transformed movie object matching CineRate schema

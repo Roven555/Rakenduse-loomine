@@ -1,14 +1,21 @@
 import { useContext, useState, useEffect } from "react";
 import { MovieContext } from "../contexts/movieContext";
-import { fetchMovieCast } from "../utils/movieApi";
+import { fetchMovieCast, fetchMovieTrailer } from "../utils/movieApi";
 import styles from "./MovieDetail.module.css";
 
 const MovieDetail = ({ movie, onBack }) => {
-  const { isLiked, isDisliked, toggleLike, toggleDislike } =
-    useContext(MovieContext);
+  const {
+    isLiked,
+    isDisliked,
+    isInWatchlist,
+    toggleLike,
+    toggleDislike,
+    toggleWatchlist,
+  } = useContext(MovieContext);
   const [cast, setCast] = useState([]);
+  const [trailerKey, setTrailerKey] = useState(null);
 
-  // Fetch cast data when movie changes
+  // Fetch cast and trailer data when movie changes
   useEffect(() => {
     if (movie && movie.id) {
       fetchMovieCast(movie.id)
@@ -17,6 +24,14 @@ const MovieDetail = ({ movie, onBack }) => {
         })
         .catch((error) => {
           console.error("Failed to load cast:", error);
+        });
+
+      fetchMovieTrailer(movie.id)
+        .then((key) => {
+          setTrailerKey(key);
+        })
+        .catch((error) => {
+          console.error("Failed to load trailer:", error);
         });
     }
   }, [movie]);
@@ -75,6 +90,22 @@ const MovieDetail = ({ movie, onBack }) => {
               <span className={styles.rating}>★ {movie.rating}/10</span>
             </div>
 
+            {/* Trailer */}
+            {trailerKey && (
+              <div className={styles.section}>
+                <h2 className={styles.sectionTitle}>Treiler</h2>
+                <div className={styles.trailerWrapper}>
+                  <iframe
+                    className={styles.trailerIframe}
+                    src={`https://www.youtube.com/embed/${trailerKey}`}
+                    title="Treiler"
+                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                    allowFullScreen
+                  />
+                </div>
+              </div>
+            )}
+
             {/* Synopsis */}
             <div className={styles.section}>
               <h2 className={styles.sectionTitle}>Süžee</h2>
@@ -113,6 +144,13 @@ const MovieDetail = ({ movie, onBack }) => {
               >
                 <span className={styles.icon}>✕</span>
                 {isDisliked(movie.id) ? "Ei meeldi" : "Ei meeldi"}
+              </button>
+              <button
+                className={`${styles.actionBtn} ${isInWatchlist(movie.id) ? styles.watchlisted : ""}`}
+                onClick={() => toggleWatchlist(movie.id)}
+              >
+                <span className={styles.icon}>🔖</span>
+                {isInWatchlist(movie.id) ? "Nimekirjas" : "Vaatan hiljem"}
               </button>
             </div>
           </div>
