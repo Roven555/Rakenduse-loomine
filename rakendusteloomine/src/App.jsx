@@ -1,4 +1,4 @@
-import { useState, useContext } from "react";
+import { useState, useContext, useEffect } from "react";
 import { MovieProvider } from "./contexts/MovieProvider";
 import { MovieDataProvider } from "./contexts/MovieDataProvider";
 import { MovieDataContext } from "./contexts/movieDataContext";
@@ -8,18 +8,41 @@ import MovieDetail from "./components/MovieDetail";
 import Profile from "./components/Profile";
 import ActorProfile from "./components/ActorProfile";
 import ActorsList from "./components/ActorsList";
+import Login from "./components/Login";
 import "./styles/global.css";
 
 function AppContent() {
   const [currentView, setCurrentView] = useState("home");
   const [selectedMovieId, setSelectedMovieId] = useState(null);
   const [selectedActor, setSelectedActor] = useState(null);
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
   const { getMovieById } = useContext(MovieDataContext);
+
+  useEffect(() => {
+    const loggedIn = localStorage.getItem("isLoggedIn") === "true";
+    setIsLoggedIn(loggedIn);
+  }, []);
+
+  const handleLogin = () => {
+    setIsLoggedIn(true);
+    setCurrentView("profile");
+  };
+
+  const handleLogout = () => {
+    localStorage.removeItem("isLoggedIn");
+    localStorage.removeItem("username");
+    setIsLoggedIn(false);
+    setCurrentView("home");
+  };
 
   const selectedMovie = getMovieById(selectedMovieId);
 
   const handleViewChange = (view) => {
-    setCurrentView(view);
+    if (view === "profile" && !isLoggedIn) {
+      setCurrentView("login");
+    } else {
+      setCurrentView(view);
+    }
     setSelectedMovieId(null);
     setSelectedActor(null);
   };
@@ -51,7 +74,7 @@ function AppContent() {
 
   return (
     <>
-      <Header currentView={currentView} onViewChange={handleViewChange} />
+      <Header currentView={currentView} onViewChange={handleViewChange} isLoggedIn={isLoggedIn} onLogout={handleLogout} />
       <main>
         {currentView === "home" && <Home onMovieSelect={handleMovieSelect} />}
         {currentView === "detail" && (
@@ -61,7 +84,10 @@ function AppContent() {
             onActorSelect={handleActorSelect}
           />
         )}
-        {currentView === "profile" && (
+        {currentView === "login" && (
+          <Login onLogin={handleLogin} />
+        )}
+        {currentView === "profile" && isLoggedIn && (
           <Profile onMovieSelect={handleMovieSelect} />
         )}
         {currentView === "actors" && (

@@ -1,7 +1,7 @@
 import { useState } from "react";
 import styles from "./Header.module.css";
 
-const Header = ({ currentView, onViewChange }) => {
+const Header = ({ currentView, onViewChange, isLoggedIn, onLogout }) => {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   return (
@@ -34,15 +34,38 @@ const Header = ({ currentView, onViewChange }) => {
           >
             Näitlejad
           </button>
-          <button
-            className={`${styles.navLink} ${currentView === "profile" ? styles.active : ""}`}
-            onClick={() => {
-              onViewChange("profile");
-              setMobileMenuOpen(false);
-            }}
-          >
-            Profiil
-          </button>
+          {isLoggedIn ? (
+            <>
+              <button
+                className={`${styles.navLink} ${currentView === "profile" ? styles.active : ""}`}
+                onClick={() => {
+                  onViewChange("profile");
+                  setMobileMenuOpen(false);
+                }}
+              >
+                Profiil
+              </button>
+              <button
+                className={styles.navLink}
+                onClick={() => {
+                  onLogout();
+                  setMobileMenuOpen(false);
+                }}
+              >
+                Logi välja
+              </button>
+            </>
+          ) : (
+            <button
+              className={styles.navLink}
+              onClick={() => {
+                onViewChange("login");
+                setMobileMenuOpen(false);
+              }}
+            >
+              Logi sisse
+            </button>
+          )}
         </nav>
 
         <button
