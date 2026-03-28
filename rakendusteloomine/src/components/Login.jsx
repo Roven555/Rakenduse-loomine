@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { login, register } from "../utils/auth";
 import styles from "./Login.module.css";
 
 const Login = ({ onLogin }) => {
@@ -6,57 +7,66 @@ const Login = ({ onLogin }) => {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    
-    if (isRegistering) {
-      // Registration validation
-      if (!username || !password || !confirmPassword) {
-        alert("Palun täitke kõik väljad");
-        return;
-      }
-      
-      if (password !== confirmPassword) {
-        alert("Paroolid ei kattu");
-        return;
-      }
-      
-      if (password.length < 6) {
-        alert("Parool peab olema vähemalt 6 märki pikk");
-        return;
-      }
-      
-      // Simple registration - in real app, send to server
-      const users = JSON.parse(localStorage.getItem("users") || "[]");
-      const userExists = users.some(user => user.username === username);
-      
-      if (userExists) {
-        alert("Kasutajanimi on juba kasutusel");
-        return;
-      }
-      
-      users.push({ username, password });
-      localStorage.setItem("users", JSON.stringify(users));
-      alert("Registreerimine õnnestus! Nüüd saate sisse logida.");
-      setIsRegistering(false);
-      setUsername("");
-      setPassword("");
-      setConfirmPassword("");
-    } else {
-      // Login validation
-      if (username && password) {
-        const users = JSON.parse(localStorage.getItem("users") || "[]");
-        const user = users.find(u => u.username === username && u.password === password);
+    setIsLoading(true);
+
+    try {
+      if (isRegistering) {
         
-        if (user) {
+        if (!username || !password || !confirmPassword) {
+          alert("Palun täitke kõik väljad");
+          return;
+        }
+
+        if (password !== confirmPassword) {
+          alert("Paroolid ei kattu");
+          return;
+        }
+
+        if (password.length < 6) {
+          alert("Parool peab olema vähemalt 6 märki pikk");
+          return;
+        }
+
+        
+        const response = await register(username, password);
+        const data = await response.json();
+
+        if (response.ok) {
+          alert(data.message);
+          setIsRegistering(false);
+          setUsername("");
+          setPassword("");
+          setConfirmPassword("");
+        } else {
+          alert(data.message);
+        }
+      } else {
+        if (!username || !password) {
+          alert("Palun sisestage kasutajanimi ja parool");
+          return;
+        }
+
+        const response = await login(username, password);
+        const data = await response.json();
+
+        if (response.ok) {
+          localStorage.setItem("token", data.token);
+          localStorage.setItem("username", data.user.username);
           localStorage.setItem("isLoggedIn", "true");
-          localStorage.setItem("username", username);
           onLogin();
         } else {
-          alert("Vale kasutajanimi või parool");
+          alert(data.message);
         }
       }
+    } catch (error) {
+      console.error('Auth error:', error);
+      alert('Võrgu viga. Palun proovige uuesti.');
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -111,8 +121,8 @@ const Login = ({ onLogin }) => {
             </div>
           )}
           
-          <button type="submit" className={styles.loginBtn}>
-            {isRegistering ? "Registreeru" : "Logi sisse"}
+          <button type="submit" className={styles.loginBtn} disabled={isLoading}>
+            {isLoading ? "Laadimine..." : (isRegistering ? "Registreeru" : "Logi sisse")}
           </button>
         </form>
         

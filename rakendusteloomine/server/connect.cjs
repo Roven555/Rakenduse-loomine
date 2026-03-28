@@ -1,20 +1,30 @@
 const { MongoClient } = require('mongodb');
 require('dotenv').config({ path: './config.env' });
 
-async function main() {
+console.log('Connect.cjs - ATLAS_URI:', process.env.ATLAS_URI ? 'Set' : 'Not set');
 
-    const Db = process.env.ATLAS_URI;
-    const client = new MongoClient(Db)
+let client;
 
-    try {
-        await client.connect()
-        const collections = await client.db("FilmiRiiul").collections()
-        collections.forEach((collection) => console.log(collection.s.namespace.collection))
-    } catch (e) {
-        console.error(e)
-    } finally {
-        await client.close()
+async function connectToDatabase() {
+    if (!client) {
+        client = new MongoClient(process.env.ATLAS_URI);
+        try {
+            await client.connect();
+            console.log('Connected to MongoDB');
+        } catch (error) {
+            console.error('MongoDB connection error:', error);
+            throw error;
+        }
+    }
+    return client.db("FilmiRiiul");
+}
+
+async function closeDatabaseConnection() {
+    if (client) {
+        await client.close();
+        client = null;
+        console.log('Database connection closed');
     }
 }
 
-main()
+module.exports = { connectToDatabase, closeDatabaseConnection };

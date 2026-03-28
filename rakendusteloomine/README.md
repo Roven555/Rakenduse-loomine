@@ -1,16 +1,71 @@
-# React + Vite
+# Movie Catalog Application
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+A React application for browsing movies with user authentication and MongoDB integration.
 
-Currently, two official plugins are available:
+## Features
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) (or [oxc](https://oxc.rs) when used in [rolldown-vite](https://vite.dev/guide/rolldown)) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+- Browse popular movies from TMDB API
+- User registration and login with MongoDB storage
+- JWT-based authentication
+- Password hashing with bcrypt
+- Responsive design
 
-## React Compiler
+## Setup Instructions
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+### Prerequisites
 
-## Expanding the ESLint configuration
+- Node.js (v14 or higher)
+- MongoDB Atlas account (or local MongoDB instance)
+- TMDB API key
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+### Installation
+
+1. Clone the repository and navigate to the project directory
+2. Install dependencies:
+   ```bash
+   npm install
+   ```
+
+3. Configure environment variables:
+   - Copy `server/config.env` and update the values:
+     - `ATLAS_URI`: Your MongoDB connection string
+     - `JWT_SECRET`: A secure secret key for JWT tokens
+     - `PORT`: Server port (default: 5000)
+
+4. Get a TMDB API key:
+   - Sign up at [TMDB](https://www.themoviedb.org/)
+   - Create an API key
+   - Add it to your environment as `VITE_TMDB_API_KEY`
+
+### Running the Application
+
+1. Start the backend server:
+   ```bash
+   npm run server
+   ```
+
+2. In a separate terminal, start the frontend:
+   ```bash
+   npm run dev
+   ```
+
+3. Start both at the same time:
+   ```bash
+   npm run dev:full
+   ```
+
+4. Open your browser to `http://localhost:5173`
+
+### API Endpoints
+
+- `POST /api/auth/register` - Register a new user
+- `POST /api/auth/login` - Login user
+- `GET /api/auth/profile` - Get user profile (requires authentication)
+
+## Technologies Used
+
+- **Frontend**: React, Vite, React Router
+- **Backend**: Node.js, Express.js
+- **Database**: MongoDB
+- **Authentication**: JWT, bcrypt
+- **API**: TMDB API

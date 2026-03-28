@@ -1,8 +1,7 @@
 import { useState, useContext, useEffect } from "react";
 import { MovieProvider } from "./contexts/MovieProvider";
 import { MovieDataProvider } from "./contexts/MovieDataProvider";
-import { MovieDataContext } from "./contexts/movieDataContext";
-import Header from "./components/Header";
+import { MovieDataContext } from "./contexts/movieDataContext";import { isAuthenticated, removeToken } from "./utils/auth";import Header from "./components/Header";
 import Home from "./components/Home";
 import MovieDetail from "./components/MovieDetail";
 import Profile from "./components/Profile";
@@ -19,7 +18,7 @@ function AppContent() {
   const { getMovieById } = useContext(MovieDataContext);
 
   useEffect(() => {
-    const loggedIn = localStorage.getItem("isLoggedIn") === "true";
+    const loggedIn = isAuthenticated();
     setIsLoggedIn(loggedIn);
   }, []);
 
@@ -31,6 +30,7 @@ function AppContent() {
   const handleLogout = () => {
     localStorage.removeItem("isLoggedIn");
     localStorage.removeItem("username");
+    removeToken();
     setIsLoggedIn(false);
     setCurrentView("home");
   };
