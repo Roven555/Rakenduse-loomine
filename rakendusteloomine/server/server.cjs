@@ -1,9 +1,10 @@
+const path = require('path');
 const express = require('express');
 const cors = require('cors');
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
+require('dotenv').config({ path: path.join(__dirname, 'config.env') });
 const { connectToDatabase } = require('./connect.cjs');
-require('dotenv').config({ path: './server/config.env' });
 
 console.log('Environment variables loaded:');
 console.log('ATLAS_URI:', process.env.ATLAS_URI ? 'Set' : 'Not set');
@@ -24,8 +25,8 @@ connectToDatabase().then(database => {
     db = database;
     console.log('Database connected in server');
 }).catch(err => {
-    console.error('Failed to connect to database:', err);
-    process.exit(1);
+    console.error('Failed to connect to database:', err.message);
+    console.log('Server will continue running without database connection.');
 });
 
 

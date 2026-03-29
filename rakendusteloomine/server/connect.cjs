@@ -1,5 +1,6 @@
+const path = require('path');
 const { MongoClient } = require('mongodb');
-require('dotenv').config({ path: './config.env' });
+require('dotenv').config({ path: path.join(__dirname, 'config.env') });
 
 console.log('Connect.cjs - ATLAS_URI:', process.env.ATLAS_URI ? 'Set' : 'Not set');
 
@@ -7,7 +8,10 @@ let client;
 
 async function connectToDatabase() {
     if (!client) {
-        client = new MongoClient(process.env.ATLAS_URI);
+        client = new MongoClient(process.env.ATLAS_URI, {
+            tls: true,
+            tlsAllowInvalidCertificates: false,
+        });
         try {
             await client.connect();
             console.log('Connected to MongoDB');
