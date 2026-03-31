@@ -10,7 +10,7 @@ async function connectToDatabase() {
     if (!client) {
         client = new MongoClient(process.env.ATLAS_URI, {
             tls: true,
-            tlsAllowInvalidCertificates: false,
+            tlsAllowInvalidCertificates: true,
         });
         try {
             await client.connect();

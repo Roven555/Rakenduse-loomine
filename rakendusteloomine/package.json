@@ -8,7 +8,7 @@
     "build": "vite build",
     "lint": "eslint .",
     "preview": "vite preview",
-    "server": "node server/server.cjs",
+    "server": "node --tls-min-v1.0 server/server.cjs",
     "dev:full": "concurrently \"npm run server\" \"npm run dev\""
   },
   "dependencies": {

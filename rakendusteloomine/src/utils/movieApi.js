@@ -1,5 +1,5 @@
 // API calls go through our backend — no TMDB key needed in the frontend
-const API_BASE = "http://localhost:5001/api";
+const API_BASE = "http://localhost:5000/api";
 
 /**
  * Fetch popular movies
