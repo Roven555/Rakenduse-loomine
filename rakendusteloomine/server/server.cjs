@@ -3,6 +3,7 @@ const express = require('express');
 const cors = require('cors');
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
+const { ObjectId } = require('mongodb');
 require('dotenv').config({ path: path.join(__dirname, 'config.env') });
 const { connectToDatabase } = require('./connect.cjs');
 const tmdbRoutes = require('./tmdbRoutes.cjs');
@@ -60,7 +61,10 @@ app.post('/api/auth/register', async (req, res) => {
         const newUser = {
             username,
             password: hashedPassword,
-            createdAt: new Date()
+            createdAt: new Date(),
+            likedMovies: [],
+            dislikedMovies: [],
+            watchlist: []
         };
 
         await db.collection('users').insertOne(newUser);
@@ -96,7 +100,7 @@ app.post('/api/auth/login', async (req, res) => {
 
         
         const token = jwt.sign(
-            { userId: user._id, username: user.username },
+            { userId: user._id.toString(), username: user.username },
             JWT_SECRET,
             { expiresIn: '7d' }
         );
@@ -134,7 +138,7 @@ const authenticateToken = (req, res, next) => {
 app.get('/api/auth/profile', authenticateToken, async (req, res) => {
     try {
         const user = await db.collection('users').findOne(
-            { _id: req.user.userId },
+            { _id: new ObjectId(req.user.userId) },
             { projection: { password: 0 } }
         );
 
@@ -145,6 +149,26 @@ app.get('/api/auth/profile', authenticateToken, async (req, res) => {
         res.json({ user });
     } catch (error) {
         console.error('Profile error:', error);
+        res.status(500).json({ message: 'Serveri viga' });
+    }
+});
+
+app.put('/api/auth/preferences', authenticateToken, async (req, res) => {
+    try {
+        const { likedMovies, dislikedMovies, watchlist } = req.body;
+
+        if (!Array.isArray(likedMovies) || !Array.isArray(dislikedMovies) || !Array.isArray(watchlist)) {
+            return res.status(400).json({ message: 'Preferences peavad olema massiivid' });
+        }
+
+        await db.collection('users').updateOne(
+            { _id: new ObjectId(req.user.userId) },
+            { $set: { likedMovies, dislikedMovies, watchlist } }
+        );
+
+        res.json({ message: 'Eelistused salvestatud' });
+    } catch (error) {
+        console.error('Preferences update error:', error);
         res.status(500).json({ message: 'Serveri viga' });
     }
 });

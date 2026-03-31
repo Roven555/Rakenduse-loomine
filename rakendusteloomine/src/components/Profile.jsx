@@ -50,7 +50,7 @@ const Profile = ({ onMovieSelect }) => {
               onClick={() => setActiveTab("watchlist")}
             >
               <span className={styles.tabIcon}>🔖</span>
-              Minu nimekiri ({watchlist.length})
+              Hiljem vaatamiseks ({watchlist.length})
             </button>
             <button
               className={`${styles.tab} ${activeTab === "dislikes" ? styles.active : ""}`}

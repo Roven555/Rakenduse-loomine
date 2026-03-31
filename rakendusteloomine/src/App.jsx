@@ -25,6 +25,7 @@ function AppContent() {
   const handleLogin = () => {
     setIsLoggedIn(true);
     setCurrentView("profile");
+    window.dispatchEvent(new Event("auth-change"));
   };
 
   const handleLogout = () => {
@@ -33,6 +34,7 @@ function AppContent() {
     removeToken();
     setIsLoggedIn(false);
     setCurrentView("home");
+    window.dispatchEvent(new Event("auth-change"));
   };
 
   const selectedMovie = getMovieById(selectedMovieId);

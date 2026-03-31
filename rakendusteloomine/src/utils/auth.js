@@ -73,3 +73,10 @@ export const register = async (username, password) => {
 export const getProfile = async () => {
   return authenticatedFetch('/auth/profile');
 };
+
+export const updatePreferences = async (preferences) => {
+  return authenticatedFetch('/auth/preferences', {
+    method: 'PUT',
+    body: JSON.stringify(preferences),
+  });
+};
