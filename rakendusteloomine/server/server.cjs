@@ -5,10 +5,12 @@ const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 require('dotenv').config({ path: path.join(__dirname, 'config.env') });
 const { connectToDatabase } = require('./connect.cjs');
+const tmdbRoutes = require('./tmdbRoutes.cjs');
 
 console.log('Environment variables loaded:');
 console.log('ATLAS_URI:', process.env.ATLAS_URI ? 'Set' : 'Not set');
 console.log('JWT_SECRET:', process.env.JWT_SECRET ? 'Set' : 'Not set');
+console.log('TMDB_API_KEY:', process.env.TMDB_API_KEY ? 'Set' : 'Not set');
 console.log('PORT:', process.env.PORT);
 
 const app = express();
@@ -18,6 +20,7 @@ const JWT_SECRET = process.env.JWT_SECRET || 'your-secret-key';
 
 app.use(cors());
 app.use(express.json());
+app.use('/api', tmdbRoutes);
 
 
 let db;
