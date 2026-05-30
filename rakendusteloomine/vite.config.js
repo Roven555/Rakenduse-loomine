@@ -4,5 +4,5 @@ import react from '@vitejs/plugin-react'
 // https://vitejs.dev/config/
 export default defineConfig({
   plugins: [react()],
-  base: '/veebiarendus/FilmiRiiul/', // TÄHTIS: Täpne kaustatee kooli serveris!
+  base: '/', // Muudetud Verceli jaoks (kooli serveri tee eemaldatud)
 })
