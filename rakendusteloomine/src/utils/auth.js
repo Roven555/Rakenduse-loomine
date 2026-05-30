@@ -1,82 +1,96 @@
-const API_BASE_URL = 'http://localhost:5000/api';
+const TOKEN_KEY = "token";
+const USERS_KEY = "frontendUsers";
+const CURRENT_USER_KEY = "username";
 
-export const getToken = () => localStorage.getItem('token');
-
-export const setToken = (token) => localStorage.setItem('token', token);
-
-export const removeToken = () => localStorage.removeItem('token');
-
-export const isAuthenticated = () => {
-  const token = getToken();
-  if (!token) return false;
-
-  try {
-    const payload = JSON.parse(atob(token.split('.')[1]));
-    const currentTime = Date.now() / 1000;
-    return payload.exp > currentTime;
-  } catch (error) {
-    return false;
-  }
-};
-
-export const authenticatedFetch = async (url, options = {}) => {
-  const token = getToken();
-
-  const headers = {
-    'Content-Type': 'application/json',
-    ...options.headers,
-  };
-
-  if (token) {
-    headers.Authorization = `Bearer ${token}`;
-  }
-
-  const response = await fetch(`${API_BASE_URL}${url}`, {
-    ...options,
-    headers,
+const createJsonResponse = (body, status = 200) =>
+  new Response(JSON.stringify(body), {
+    status,
+    headers: { "Content-Type": "application/json" },
   });
 
-  if (response.status === 401) {
-    removeToken();
-    localStorage.removeItem('isLoggedIn');
-    localStorage.removeItem('username');
-    window.location.reload();
-  }
+const getUsers = () => JSON.parse(localStorage.getItem(USERS_KEY) || "{}");
 
-  return response;
+const saveUsers = (users) => {
+  localStorage.setItem(USERS_KEY, JSON.stringify(users));
 };
+
+const getCurrentUser = () => {
+  const username = localStorage.getItem(CURRENT_USER_KEY);
+  const users = getUsers();
+  return username ? users[username] : null;
+};
+
+export const getToken = () => localStorage.getItem(TOKEN_KEY);
+
+export const setToken = (token) => localStorage.setItem(TOKEN_KEY, token);
+
+export const removeToken = () => localStorage.removeItem(TOKEN_KEY);
+
+export const isAuthenticated = () => Boolean(getToken() && localStorage.getItem(CURRENT_USER_KEY));
+
+export const authenticatedFetch = async () => getProfile();
 
 export const login = async (username, password) => {
-  const response = await fetch(`${API_BASE_URL}/auth/login`, {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-    },
-    body: JSON.stringify({ username, password }),
-  });
+  const users = getUsers();
+  const user = users[username];
 
-  return response;
+  if (!user || user.password !== password) {
+    return createJsonResponse({ message: "Vale kasutajanimi või parool" }, 401);
+  }
+
+  const token = `frontend-${username}-${Date.now()}`;
+  setToken(token);
+
+  return createJsonResponse({
+    message: "Sisselogimine õnnestus!",
+    token,
+    user: { username },
+  });
 };
 
 export const register = async (username, password) => {
-  const response = await fetch(`${API_BASE_URL}/auth/register`, {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-    },
-    body: JSON.stringify({ username, password }),
-  });
+  const users = getUsers();
 
-  return response;
+  if (users[username]) {
+    return createJsonResponse({ message: "Kasutajanimi on juba kasutusel" }, 400);
+  }
+
+  users[username] = {
+    username,
+    password,
+    likedMovies: [],
+    dislikedMovies: [],
+    watchlist: [],
+  };
+  saveUsers(users);
+
+  return createJsonResponse({ message: "Registreerimine õnnestus!" }, 201);
 };
 
 export const getProfile = async () => {
-  return authenticatedFetch('/auth/profile');
+  const user = getCurrentUser();
+
+  if (!user) {
+    return createJsonResponse({ message: "Kasutajat ei leitud" }, 404);
+  }
+
+  const { password, ...publicUser } = user;
+  return createJsonResponse({ user: publicUser });
 };
 
 export const updatePreferences = async (preferences) => {
-  return authenticatedFetch('/auth/preferences', {
-    method: 'PUT',
-    body: JSON.stringify(preferences),
-  });
+  const username = localStorage.getItem(CURRENT_USER_KEY);
+  const users = getUsers();
+
+  if (!username || !users[username]) {
+    return createJsonResponse({ message: "Kasutajat ei leitud" }, 404);
+  }
+
+  users[username] = {
+    ...users[username],
+    ...preferences,
+  };
+  saveUsers(users);
+
+  return createJsonResponse({ message: "Eelistused salvestatud" });
 };
