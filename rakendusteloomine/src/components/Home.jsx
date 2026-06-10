@@ -193,7 +193,7 @@ const movieReducer = (state, action) => {
 };
 
 // Helper function to sort movies
-const sortMovies = (movies, sortBy) => {
+export const sortMovies = (movies, sortBy) => {
   const sorted = [...movies];
   switch (sortBy) {
     case "rating-desc":
@@ -215,7 +215,7 @@ const sortMovies = (movies, sortBy) => {
 };
 
 // Helper function to filter movies
-const filterMovies = (
+export const filterMovies = (
   movies,
   searchQuery,
   category,
@@ -260,7 +260,7 @@ const filterMovies = (
 };
 
 // Get unique categories from movies
-const getCategories = (movies) => {
+export const getCategories = (movies) => {
   const categories = ["Kõik"];
   const unique = new Set();
   movies.forEach((m) => {
