@@ -14,11 +14,25 @@ const EXCLUDED_MOVIES = [
   '1000 Men and Me: The Bonnie Blue Story',
 ];
 
+// Excluded categories
+const EXCLUDED_CATEGORIES = ['Dokumentaal', 'Documentary'];
+
 // Function to check if a movie should be excluded
 function isMovieExcluded(movie) {
   return EXCLUDED_MOVIES.some(excludedTitle => 
     movie.title && movie.title.toLowerCase() === excludedTitle.toLowerCase()
   );
+}
+
+// Function to check if a movie has excluded categories
+function hasExcludedCategory(movie) {
+  // Check genre_ids (numbers)
+  if (movie.genre_ids && movie.genre_ids.includes(99)) return true;
+  
+  // Check genres (objects)
+  if (Array.isArray(movie.genres) && movie.genres.some(g => g.name === 'Documentary')) return true;
+  
+  return false;
 }
 
 // Translation cache
@@ -109,7 +123,7 @@ router.get('/movies/popular', async (req, res) => {
     const data = await tmdbFetch(`/discover/movie?sort_by=popularity.desc&page=${page}&include_adult=false&language=en-US&region=US`);
 
     const movies = (data.results || [])
-      .filter((m) => m.poster_path && m.backdrop_path && !isMovieExcluded(m))
+      .filter((m) => m.poster_path && m.backdrop_path && !isMovieExcluded(m) && !hasExcludedCategory(m))
       .map((m) => transformTMDBMovie(m));
 
     await Promise.all(movies.map(async (movie) => {
@@ -132,7 +146,7 @@ router.get('/movies/search', async (req, res) => {
     const data = await tmdbFetch(`/search/movie?query=${encodeURIComponent(query)}&page=${page}&language=en-US`);
 
     const movies = (data.results || [])
-      .filter((m) => m.poster_path && m.backdrop_path && !isMovieExcluded(m))
+      .filter((m) => m.poster_path && m.backdrop_path && !isMovieExcluded(m) && !hasExcludedCategory(m))
       .map((m) => transformTMDBMovie(m));
 
     await Promise.all(movies.map(async (movie) => {
@@ -291,7 +305,7 @@ router.get('/actors/:id/movies', async (req, res) => {
     const data = await tmdbFetch(`/person/${req.params.id}/movie_credits?language=en-US`);
 
     const movies = (data.cast || [])
-      .filter((m) => m.poster_path && !isMovieExcluded(m))
+      .filter((m) => m.poster_path && !isMovieExcluded(m) && !hasExcludedCategory(m))
       .sort((a, b) => (b.popularity || 0) - (a.popularity || 0))
       .slice(0, 30)
       .map((m) => transformTMDBMovie(m));

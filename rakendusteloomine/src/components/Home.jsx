@@ -263,11 +263,19 @@ export const filterMovies = (
 export const getCategories = (movies) => {
   const categories = ["Kõik"];
   const unique = new Set();
+  const excludedCategories = ["Dokumentaal", "Documentary"];
+  
   movies.forEach((m) => {
     if (m.categories) {
-      m.categories.forEach((c) => unique.add(c));
+      m.categories.forEach((c) => {
+        if (!excludedCategories.includes(c)) {
+          unique.add(c);
+        }
+      });
     } else if (m.category) {
-      unique.add(m.category);
+      if (!excludedCategories.includes(m.category)) {
+        unique.add(m.category);
+      }
     }
   });
   return [...categories, ...Array.from(unique).sort()];
